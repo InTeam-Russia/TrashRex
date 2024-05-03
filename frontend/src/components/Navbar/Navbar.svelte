@@ -10,7 +10,7 @@
         {
             route: "/problems",
             name: "Мои проблемы",
-            icon: "ic:round-report-problem",
+            icon: "material-symbols:report-outline",
         },
         {
             route: "/tasks",
@@ -18,14 +18,39 @@
             icon: "bx:task",
         }
     ]
+
+    let user = null
 </script>
 
 <nav>
+    <a href="/" class="brand">
+        <span class="icon">
+            <Icon icon="fluent:bin-recycle-full-24-filled" width="1em" height="1em"/>
+        </span>
+        <span>
+            TrashRex
+        </span>
+    </a>
     <ul class="tabs">
         {#each tabsList as tab}
-            <a href={tab.route}><Icon icon={tab.icon} width="1em" height="1em" />{tab.name}</a>
+            <a href={tab.route} class="tab">
+                <span class="icon">
+                    <Icon icon={tab.icon} width="1em" height="1em" />
+                </span>
+                <span>
+                    {tab.name}
+                </span>
+            </a>
         {/each}
     </ul>
+    &nbsp;
+    <div class="user">
+        {#if user}
+        <span>Залогинен</span>
+        {:else}
+        <span>Незалогинен</span>
+        {/if}
+    </div>
 </nav>
 
 <style lang="scss">

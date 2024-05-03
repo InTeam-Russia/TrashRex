@@ -1,3 +1,66 @@
 @charset "UTF-8";
 @use "../../utils/colors.scss" as *;
 
+nav {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 1rem;
+    margin: 1rem;
+    margin-top: 0;
+    position: sticky;
+    top: 1rem;
+    background-color: $color-light-green-300;
+    border-radius: 1rem;
+    box-shadow: 0 0 1rem $color-teal-900;
+
+    & .brand {
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: .5em;
+
+        & span {
+            font-size: x-large;
+
+            &.icon {
+                font-size: xx-large;
+                display: flex;
+            }
+
+            &:not(.icon) {
+                border-bottom: .125rem $color-teal-900 dotted;
+            }
+        }
+    }
+
+    & .tabs {
+        display: flex;
+        gap: 1rem;
+
+        & .tab {
+            transition: .25s;
+            display: flex;
+            align-items: center;
+            font-size: larger;
+
+            & span {
+                margin-left: .25rem;
+
+                &.icon {
+                    display: flex;
+                    align-items: center;
+                    font-size: x-large;
+                }
+            }
+
+            &:hover {
+                color: $color-teal-700;
+            }
+
+            &:active {
+                scale: 0.95;
+            }
+        }
+    }
+}
