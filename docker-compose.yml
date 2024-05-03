@@ -23,13 +23,13 @@ services:
     container_name: fastapi
     restart: always
     ports:
-      - "8002:8002"
+      - "8000:8000"
     depends_on:
       - db
     volumes:
-      - .:/python/app
+      - ./python:/app
       - ./public:/public
-    command: ["uvicorn", "app.main:app", "--reload", "--workers", "1", "--host", "0.0.0.0", "--port", "8002"]
+    command: ["uvicorn", "main:app", "--reload", "--workers", "1", "--host", "0.0.0.0", "--port", "8000"]
     networks:
       inteamnet:
         ipv4_address: 10.1.0.101
