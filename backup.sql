@@ -16,18 +16,38 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
-ALTER TABLE ONLY public.problems DROP CONSTRAINT problems_users_id_fk2;
-ALTER TABLE ONLY public.problems DROP CONSTRAINT problems_users_id_fk;
-ALTER TABLE ONLY public.users DROP CONSTRAINT users_pk;
-ALTER TABLE ONLY public.users DROP CONSTRAINT users_email;
-ALTER TABLE ONLY public.problems DROP CONSTRAINT problems_pk;
-ALTER TABLE public.users ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.problems ALTER COLUMN id DROP DEFAULT;
-DROP SEQUENCE public.users_id_seq;
-DROP TABLE public.users;
-DROP SEQUENCE public.problems_id_seq;
-DROP TABLE public.problems;
-DROP TYPE public.problem_state;
+ALTER TABLE IF EXISTS ONLY public.problems DROP CONSTRAINT IF EXISTS problems_users_id_fk2;
+ALTER TABLE IF EXISTS ONLY public.problems DROP CONSTRAINT IF EXISTS problems_users_id_fk;
+ALTER TABLE IF EXISTS ONLY public.problem_votes DROP CONSTRAINT IF EXISTS problem_votes_users_id_fk;
+ALTER TABLE IF EXISTS ONLY public.problem_votes DROP CONSTRAINT IF EXISTS problem_votes_problems_id_fk;
+ALTER TABLE IF EXISTS ONLY public.users DROP CONSTRAINT IF EXISTS users_pk;
+ALTER TABLE IF EXISTS ONLY public.users DROP CONSTRAINT IF EXISTS users_email;
+ALTER TABLE IF EXISTS ONLY public.problems DROP CONSTRAINT IF EXISTS problems_pk;
+ALTER TABLE IF EXISTS public.users ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE IF EXISTS public.problems ALTER COLUMN id DROP DEFAULT;
+DROP SEQUENCE IF EXISTS public.users_id_seq;
+DROP TABLE IF EXISTS public.users;
+DROP SEQUENCE IF EXISTS public.problems_id_seq;
+DROP TABLE IF EXISTS public.problems;
+DROP TABLE IF EXISTS public.problem_votes;
+DROP TYPE IF EXISTS public.problem_state;
+DROP SCHEMA IF EXISTS public;
+--
+-- Name: public; Type: SCHEMA; Schema: -; Owner: pg_database_owner
+--
+
+CREATE SCHEMA public;
+
+
+ALTER SCHEMA public OWNER TO pg_database_owner;
+
+--
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: pg_database_owner
+--
+
+COMMENT ON SCHEMA public IS 'standard public schema';
+
+
 --
 -- Name: problem_state; Type: TYPE; Schema: public; Owner: postgres
 --
@@ -48,6 +68,19 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
+-- Name: problem_votes; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.problem_votes (
+    user_id integer NOT NULL,
+    problem_id integer NOT NULL,
+    logo character varying(256) NOT NULL
+);
+
+
+ALTER TABLE public.problem_votes OWNER TO postgres;
+
+--
 -- Name: problems; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -60,7 +93,7 @@ CREATE TABLE public.problems (
     author_id integer,
     solver_id integer,
     solution_photo character varying(512),
-    state public.problem_state DEFAULT 'free'::public.problem_state NOT NULL
+    state character varying(10) DEFAULT 'free'::character varying NOT NULL
 );
 
 
@@ -146,6 +179,14 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 
 
 --
+-- Data for Name: problem_votes; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.problem_votes (user_id, problem_id, logo) FROM stdin;
+\.
+
+
+--
 -- Data for Name: problems; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -197,6 +238,22 @@ ALTER TABLE ONLY public.users
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pk PRIMARY KEY (id);
+
+
+--
+-- Name: problem_votes problem_votes_problems_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.problem_votes
+    ADD CONSTRAINT problem_votes_problems_id_fk FOREIGN KEY (problem_id) REFERENCES public.problems(id);
+
+
+--
+-- Name: problem_votes problem_votes_users_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.problem_votes
+    ADD CONSTRAINT problem_votes_users_id_fk FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
