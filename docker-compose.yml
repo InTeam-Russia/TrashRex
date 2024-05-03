@@ -9,11 +9,11 @@ services:
     environment:
      - POSTGRES_USER=postgres
      - POSTGRES_PASSWORD=postgres
-     - POSTGRES_DB=logistic
+     - POSTGRES_DB=trash
     ports:
      - "5432:5432"
     volumes:
-     - ./data:/var/lib/postgresql/data
+     - pgdata:/var/lib/postgresql/data
     networks:
       inteamnet:
         ipv4_address: 10.1.0.100
@@ -34,21 +34,21 @@ services:
       inteamnet:
         ipv4_address: 10.1.0.101
 
-  frontend:
-    build: ./frontend
-    container_name: frontend
-    ports:
-      - 80:5173
-    environment:
-        NODE_ENV: production
-    volumes:
-      - ./frontend:/frontend
-      - ./public:/public
-    stdin_open: true
-    tty: true
-    networks:
-      inteamnet:
-        ipv4_address: 10.1.0.104
+#  frontend:
+#    build: ./frontend
+#    container_name: frontend
+#    ports:
+#      - 80:5173
+#    environment:
+#        NODE_ENV: production
+#    volumes:
+#      - ./frontend:/frontend
+#      - ./public:/public
+#    stdin_open: true
+#    tty: true
+#    networks:
+#      inteamnet:
+#        ipv4_address: 10.1.0.104
 
   pgadmin:
     image: dpage/pgadmin4:8.5
@@ -97,3 +97,4 @@ networks:
 
 volumes:
   pgadmin:
+  pgdata:
