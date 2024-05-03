@@ -94,8 +94,6 @@
             <input type="reset" value="Сбросить">  
         </div>
     </form>
-    <pre>{JSON.stringify(isAuth ? authForm : regForm, ";", 2)}</pre>
-    <pre>{JSON.stringify(isAuth ? authFormValidate : regFormValidate, ";", 2)}</pre>
 </section>
 
 <style lang="scss">
