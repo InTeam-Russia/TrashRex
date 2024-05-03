@@ -12,7 +12,7 @@ use core\responseType;
 });*/
 
 //SimpleRouter::controller('/images', 'ImagesController');
-SimpleRouter::post('/products/add', [\controllers\products::class, 'add']);
+/*SimpleRouter::post('/products/add', [\controllers\products::class, 'add']);
 SimpleRouter::get('/products/{id}', [\controllers\products::class, 'get']);
 
 SimpleRouter::get('/categories/all', [\controllers\categories::class, 'getAllCategories']);
@@ -30,7 +30,7 @@ SimpleRouter::post('/infrastructure/storage/{city_id}', [\controllers\infrastruc
 SimpleRouter::post('/infrastructure/delivery_point/{city_id}', [\controllers\infrastructure::class, 'addDeliveryPoint']);
 SimpleRouter::delete('/infrastructure/storage/{city_id}', [\controllers\infrastructure::class, 'removeStorage']);
 SimpleRouter::delete('/infrastructure/delivery_point/{city_id}', [\controllers\infrastructure::class, 'removeDeliveryPoint']);
-SimpleRouter::get('/infrastructure/', [\controllers\infrastructure::class, 'get']);
+SimpleRouter::get('/infrastructure/', [\controllers\infrastructure::class, 'get']);*/
 
 SimpleRouter::error(function(Request $request, \Exception $exception) {
     $front = frontend::getInstance();
