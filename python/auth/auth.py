@@ -1,9 +1,6 @@
 from fastapi_users.authentication import CookieTransport, AuthenticationBackend
-import os
-import sys
-sys.path.insert(1, os.path.join(sys.path[0], '..'))
 
-from app.config import JWT_SECRET_CODE
+from config import JWT_SECRET_CODE
 
 cookie_transport = CookieTransport(cookie_max_age=3600, cookie_name="Auth_cookie")
 
