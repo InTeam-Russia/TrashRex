@@ -1,0 +1,39 @@
+@charset "UTF-8";
+@use "../../utils/colors.scss" as *;
+
+@media screen and (max-width: 1024px) {
+    h1 {
+        font-size: large;
+        width: 90vw;
+
+        & span {
+            padding: 1rem;
+
+            &:first-child {
+                width: 30%;
+            }
+
+            &:last-child {
+                width: 70%;
+            }
+        }
+    }
+
+    form {
+        align-items: center;
+        width: 90vw;
+
+        & .text {
+            width: 90vw;
+        }
+
+        & div {
+            flex-direction: column;
+            width: 90vw;
+
+            & input {
+                width: 100% !important;
+            }
+        }
+    }
+}
