@@ -43,6 +43,7 @@
             </a>
         {/each}
     </ul>
+    &nbsp;
     <div class="user">
         {#if user}
         <span>Залогинен</span>
