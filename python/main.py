@@ -1,6 +1,12 @@
+import json
+
 from fastapi import FastAPI, Path, Query, Depends, HTTPException, status
+from fastapi.encoders import jsonable_encoder
 from fastapi_users import FastAPIUsers
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
+
+
 from sqlalchemy import text, insert, select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from sqlalchemy.orm import sessionmaker
@@ -14,6 +20,18 @@ from models.models import problems
 
 app = FastAPI()
 Async_Session = async_sessionmaker(engine)
+
+origins = [
+    "http://localhost:5173",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allow_headers=["Content-Type", "Authorization", "Set-Cookie", "Access-Control-Request-Headers", "Access-Control-Allow-Headers"],
+)
 
 fastapi_users = FastAPIUsers[User, int](
     get_user_manager,
@@ -87,4 +105,5 @@ async def finish_problem(problem_id: int, user: User = Depends(current_user)):
 async def all_problems(user: User = Depends(current_user)):
     async with Async_Session() as session:
         results = await session.execute(select(problems).order_by(problems.c.id))
-        return JSONResponse(content=results.all(), status_code=status.HTTP_200_OK)
+        answer = json.dumps([(dict(row.items())) for row in results])
+        return answer
