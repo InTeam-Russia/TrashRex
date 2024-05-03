@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 
-from sqlalchemy import text, insert, select, update
+from sqlalchemy import  insert, select, update
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from auth.auth import auth_backend
