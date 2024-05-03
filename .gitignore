@@ -3,3 +3,4 @@ venv
 .idea
 .venv
 /go/
+/python/__pycache__
