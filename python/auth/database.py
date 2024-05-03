@@ -19,11 +19,13 @@ class User(SQLAlchemyBaseUserTable[int], Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     is_superuser: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     is_verified: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    telegram: Mapped[str] = mapped_column(String(length=256), nullable=True)
+    vk: Mapped[str] = mapped_column(String(length=256), nullable=True)
 
 
 
 engine = create_async_engine(url=DATABASE_URL, echo=True)
-async_session_maker = async_sessionmaker(engine, expire_on_commit=False)
+async_session_maker  = async_sessionmaker(engine, expire_on_commit=False)
 
 async def create_db_and_tables():
     async with engine.begin() as conn:

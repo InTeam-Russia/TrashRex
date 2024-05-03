@@ -1,20 +1,19 @@
-import asyncio
-
 from fastapi import FastAPI, Path, Query, Depends, HTTPException, status
 from fastapi_users import FastAPIUsers
 from fastapi.responses import JSONResponse
-from sqlalchemy import text, insert, select
+from sqlalchemy import text, insert, select, update, delete
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+from sqlalchemy.orm import sessionmaker
 
 from auth.auth import auth_backend
-from auth.database import User, engine, DATABASE_URL, get_async_session
+from auth.database import User, engine, DATABASE_URL
 from auth.manager import get_user_manager
 from auth.schemas import UserRead, UserCreate
 
 from models.models import problems
 
-
 app = FastAPI()
-session = get_async_session()
+Async_Session = async_sessionmaker(engine)
 
 fastapi_users = FastAPIUsers[User, int](
     get_user_manager,
@@ -36,33 +35,56 @@ current_user = fastapi_users.current_user()
 
 @app.get("/protected-route")
 def protected_route(user: User = Depends(current_user)):
-    return f"Hello, {user.username}"
+    return f"Hello, {user.id}"
 
 @app.post("/problems/create")
-async def create_problem(description: str, problem_photo: str, lat: float, lon: float, user: User = Depends(current_user)):
-    q = insert(problems).values(description = description, problem_photo = problem_photo, lat = lat, lon = lon, author_id = user.id)
-    await session.execute(q)
-    await session.commit()
+async def create_problem(description: str, photo_NNN: str, lat: float, lon: float, user: User = Depends(current_user)):
+    async with Async_Session() as session:
+        q = insert(problems).values(description=description, photo= photo_NNN, lat=lat, lon=lon, author_id=user.id, solver_id=None, solution_photo=None)
+        await session.execute(q)
+        await session.commit()
+        return JSONResponse(content="Done!", status_code=status.HTTP_201_CREATED)
 
 @app.post("/problems/join/{problem_id}")
 async def join_problem(problem_id: int, user: User = Depends(current_user)):
-    problem = problems.query.filter_by(problem_id = problem_id).first()
-    problem.author_id = user.id
-    problem.state = "in_progress"
-    await session.commit()
+    async with Async_Session() as session:
+        await session.execute(update(problems).where(problems.c.id == problem_id).values({"solver_id": user.id, "state": "in_progress"}))
+        await session.commit()
 
 @app.post("/problems/{command}/{id}")
-async def create_command(command: str, id: int, user: User = Depends(current_user)):
-    problem = problems.query.filter_by(problem_id = problem_id).first()
-    if command == "finish":
-        problem.state = "completed"
-    elif command == "verificate":
-        problem.state = "on_verification"
-    elif command == "voting":
-        problem.state = "on_voting"
-    await session.commit()
+async def create_command(command: str, problem_id: int, user: User = Depends(current_user)):
+    async with Async_Session() as session:
+        if command == "finish":
+            await session.execute(update(problems).where(problems.c.id == problem_id).values(
+                {"state": "completed"}))
+        elif command == "verificate":
+            await session.execute(update(problems).where(problems.c.id == problem_id).values(
+                {"state": "on_verification"}))
+        elif command == "voting":
+            await session.execute(update(problems).where(problems.c.id == problem_id).values(
+                {"state": "on_voting"}))
+        await session.commit()
+
+@app.post("/problems/finish/{id}")
+async def finish_problem(problem_id: int, user: User = Depends(current_user)):
+    async with Async_Session() as session:
+        await session.execute(update(problems).where(problems.c.id == problem_id).values({"state": "in_progress"}))
+        await session.commit()
+
+@app.post("/problems/verificate/{id}")
+async def finish_problem(problem_id: int, user: User = Depends(current_user)):
+    async with Async_Session() as session:
+        await session.execute(update(problems).where(problems.c.id == problem_id).values({"state": "on_verification"}))
+        await session.commit()
+
+@app.post("/problems/voting/{id}")
+async def finish_problem(problem_id: int, user: User = Depends(current_user)):
+    async with Async_Session() as session:
+        await session.execute(update(problems).where(problems.c.id == problem_id).values({"state": "on_voting"}))
+        await session.commit()
 
 @app.get("/problems/all")
 async def all_problems(user: User = Depends(current_user)):
-    problems = problems.query.all()
-    return JSONResponse(problems)
+    async with Async_Session() as session:
+        results = await session.execute(select(problems).order_by(problems.c.id))
+        return JSONResponse(content=results.all(), status_code=status.HTTP_200_OK)
