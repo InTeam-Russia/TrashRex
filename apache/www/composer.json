@@ -1,0 +1,8 @@
+{
+    "require": {
+        "pecee/simple-router": "^5.4",
+      "ext-pdo": "*",
+      "ext-ctype": "*",
+      "ext-curl": "*"
+    }
+}

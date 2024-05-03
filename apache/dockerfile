@@ -1,0 +1,76 @@
+#FROM php:apache-alpine
+FROM alpine:latest
+
+#ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
+
+#RUN apt-get update \
+# && apt-get install -y git zlib1g-dev libpq-dev
+
+#RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
+#RUN docker-php-ext-install curl fileinfo gd mbstring pdo_pgsql pgsql
+#RUN docker-php-ext-configure gd --with-gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ --with-png-dir=/usr/include/
+#RUN docker-php-ext-configure gd
+#RUN docker-php-ext-install gd
+
+#RUN apt-get update && apt-get install -y \
+#        openssl \
+#        curl \
+#        wget \
+#        git \
+#        unzip \
+#        libfreetype6-dev \
+#        libjpeg62-turbo-dev \
+#        libmcrypt-dev \
+#        libicu-dev libpq-dev oniguruma \
+#                --no-install-recommends
+
+RUN apk update && apk add bash oniguruma-dev libpq-dev git curl wget openssl unzip
+RUN apk --no-cache --update \
+    add apache2 \
+    apache2-ssl \
+    curl \
+    php83-apache2 \
+    php83-bcmath \
+    php83-bz2 \
+    php83-calendar \
+    php83-common \
+    php83-ctype \
+    php83-curl \
+    php83-dom \
+    php83-gd \
+    php83-iconv \
+    php83-mbstring \
+    php83-mysqli \
+    php83-mysqlnd \
+    php83-openssl \
+    php83-pdo_mysql \
+    php83-pdo_pgsql \
+    php83-pdo_sqlite \
+    php83-phar \
+    php83-session \
+    php83-xml \
+    composer \
+    && mkdir /htdocs
+
+# RUN php83 -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
+#     php83 -r "if (hash_file('sha384', 'composer-setup.php') === 'e21205b207c3ff031906575712edab6f13eb0b361f2085f1f1237b7126d785e826a450292b6cfd1d64d92e6563bbde02') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" && \
+#     php83 composer-setup.php && \
+#     php83 -r "unlink('composer-setup.php');" && \
+#     mv composer.phar /usr/local/bin/composer;
+
+
+COPY ./000-default.conf /etc/apache2/sites-available/000-default.conf
+#COPY ./apache2.conf /etc/apache2/apache2.conf
+COPY ./php.ini-apache /usr/local/etc/php/php.ini
+#COPY . .
+ADD docker-entrypoint.sh /
+
+RUN cd /htdocs && composer require pecee/simple-router
+
+
+
+EXPOSE 80
+
+HEALTHCHECK CMD wget -q --no-cache --spider localhost
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
