@@ -61,7 +61,7 @@
 
             fetch("http://10.1.0.101:8000/user/login", {
                 method: "POST",
-                body: res,
+                body: JSON.stringify(res),
                 headers: {
                     "Content-Type": "application/json"
                 }
@@ -83,7 +83,7 @@
 
             fetch("http://10.1.0.101:8000/user/register", {
                 method: "POST",
-                body: res,
+                body: JSON.stringify(res),
                 headers: {
                     "Content-Type": "application/json"
                 }
