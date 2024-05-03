@@ -24,6 +24,8 @@ users = Table(
     Column("is_verified", Boolean, default=False, nullable=False),
     Column("telegram", String(256), nullable=True),
     Column("vk", String(256), nullable=True),
+    Column("name", String(256), nullable=False),
+    Column("surname", String(256), nullable=True),
 )
 problems = Table(
     "problems",
