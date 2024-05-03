@@ -28,23 +28,6 @@ DROP TABLE public.users;
 DROP SEQUENCE public.problems_id_seq;
 DROP TABLE public.problems;
 DROP TYPE public.problem_state;
-DROP SCHEMA public;
---
--- Name: public; Type: SCHEMA; Schema: -; Owner: pg_database_owner
---
-
-CREATE SCHEMA public;
-
-
-ALTER SCHEMA public OWNER TO pg_database_owner;
-
---
--- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: pg_database_owner
---
-
-COMMENT ON SCHEMA public IS 'standard public schema';
-
-
 --
 -- Name: problem_state; Type: TYPE; Schema: public; Owner: postgres
 --
@@ -118,7 +101,9 @@ CREATE TABLE public.users (
     is_verified boolean DEFAULT false NOT NULL,
     telegram character varying(256),
     vk character varying(256),
-    photo character varying(512)
+    photo character varying(512),
+    name character varying(256),
+    surname character varying(256)
 );
 
 
@@ -164,7 +149,7 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 -- Data for Name: problems; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.problems (id, description, photo, lat, lon, author_id, solver_id, solution_photo, state, name, surname) FROM stdin;
+COPY public.problems (id, description, photo, lat, lon, author_id, solver_id, solution_photo, state) FROM stdin;
 \.
 
 
@@ -172,7 +157,7 @@ COPY public.problems (id, description, photo, lat, lon, author_id, solver_id, so
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.users (id, email, hashed_password, is_active, is_superuser, is_verified, telegram, vk, photo) FROM stdin;
+COPY public.users (id, email, hashed_password, is_active, is_superuser, is_verified, telegram, vk, photo, name, surname) FROM stdin;
 \.
 
 
