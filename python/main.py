@@ -56,9 +56,9 @@ def protected_route(user: User = Depends(current_user)):
     return f"Hello, {user.id}"
 
 @app.post("/problems/create")
-async def create_problem(description: str, photo_NNN: str, lat: float, lon: float, user: User = Depends(current_user)):
+async def create_problem(description: str, photo: str, lat: float, lon: float, user: User = Depends(current_user)):
     async with Async_Session() as session:
-        q = insert(problems).values(description=description, photo= photo_NNN, lat=lat, lon=lon, author_id=user.id, solver_id=None, solution_photo=None)
+        q = insert(problems).values(description=description, photo= photo, lat=lat, lon=lon, author_id=user.id, solver_id=None, solution_photo=None)
         await session.execute(q)
         await session.commit()
         return JSONResponse(content="Done!", status_code=status.HTTP_201_CREATED)
@@ -105,5 +105,7 @@ async def finish_problem(problem_id: int, user: User = Depends(current_user)):
 async def all_problems(user: User = Depends(current_user)):
     async with Async_Session() as session:
         results = await session.execute(select(problems).order_by(problems.c.id))
-        answer = json.dumps([(dict(row.items())) for row in results])
+        #for row in results:
+
+        answer = '\n'.join(json.dumps(dict(row._asdict())) for row in results)
         return answer

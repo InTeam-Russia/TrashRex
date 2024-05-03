@@ -10,6 +10,8 @@ class UserRead(schemas.BaseUser[int]):
     is_verified: bool = False
     telegram: str = None
     vk: str = None
+    name: str
+    surname: str = None
 
 class UserCreate(schemas.BaseUserCreate):
     email: str
@@ -19,4 +21,6 @@ class UserCreate(schemas.BaseUserCreate):
     is_verified: Optional[bool] = False
     telegram: str = None
     vk: str = None
+    name: str
+    surname: str = None
 
