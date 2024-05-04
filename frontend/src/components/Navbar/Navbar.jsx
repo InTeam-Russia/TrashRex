@@ -40,7 +40,7 @@ const Navbar = ({ user, setUser }) => {
                 {tab.name}
             </span>
             </a>)}
-          <a href="/profile" className={style.tab}>
+          <a href={user ? "/profile" : "/authreg"} className={style.tab}>
               <span className={style.icon}>
                 <Icon icon="fluent:person-star-32-filled" width="1em" height="1em" />
               </span>

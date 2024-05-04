@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import style from "./AuthregPage.module.scss"
+import { redirect } from "react-router-dom"
 
 const AuthregPage = () => {
   const emailRegex = /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z0-9]+$/
@@ -30,7 +31,6 @@ const AuthregPage = () => {
   })
 
   const validateForm = () => {
-    return true
     let flag = true
     if (isAuth) return !flag
     flag = flag && vkRegex.test(regForm.vk)
@@ -63,6 +63,7 @@ const AuthregPage = () => {
         }
       })
       .then(response => response.json())
+      .then(window.location.pathname = "/")
       .catch(() => {alert("Ошибка сервера, попробуйте позднее")})
     } else {
       const res = {
@@ -71,13 +72,11 @@ const AuthregPage = () => {
         is_active: true,
         is_superuser: false,
         is_verified: false,
-        telegram: regForm.telegram ? regForm.telegram : null,
-        vk: regForm.vk ? regForm.vk : null,
+        telegram: regForm.telegram,
+        vk: regForm.vk,
         name: regForm.name ? regForm.name : null,
         surname: regForm.surname ? regForm.surname : null,
       }
-      alert(JSON.stringify(res))
-
 
       fetch("http://10.1.0.101:8000/user/register", {
         method: "POST",
@@ -94,8 +93,8 @@ const AuthregPage = () => {
   return (
   <section>
     <h1 className={style.h1}>
-      <span class={isAuth && style.active} onClick={() => {setIsAuth(true)}}>Вход</span>
-      <span class={!isAuth && style.active} onClick={() => {setIsAuth(false)}}>Регистрация</span>
+      <span className={isAuth && style.active} onClick={() => {setIsAuth(true)}}>Вход</span>
+      <span className={!isAuth && style.active} onClick={() => {setIsAuth(false)}}>Регистрация</span>
     </h1>
     <form method="post" onSubmit={handleSubmit} className={style.form}>
       {isAuth
@@ -105,19 +104,19 @@ const AuthregPage = () => {
             <input type="text" value={regForm.name} onChange={(event) => {setRegForm({...regForm, name: event.target.value})}} required placeholder="Имя" className={style.text} />
             <input type="text" value={regForm.surname} onChange={(event) => {setRegForm({...regForm, surname: event.target.value})}} required placeholder="Фамилия" className={style.text} />
             <input type="text" value={regForm.vk} onChange={(event) => {setRegForm({...regForm, vk: event.target.value})}} placeholder="ВК (ссылка на профиль)" className={style.text} />
-            <span class={`${style.error} ${regFormValidate.isVkPattern ? style.hidden : ""}`}>
+            <span className={`${style.error} ${regFormValidate.isVkPattern ? style.hidden : ""}`}>
               Ссылка не удовлетворяет формату https://vk.com/example
             </span>
             <input type="text" value={regForm.telegram} onChange={(event) => {setRegForm({...regForm, telegram: event.target.value})}} placeholder="Telegram (ссылка на профиль)" className={style.text} />
-            <span class={`${style.error} ${regFormValidate.isTgPattern ? style.hidden : ""}`}>
+            <span className={`${style.error} ${regFormValidate.isTgPattern ? style.hidden : ""}`}>
               Ссылка не удовлетворяет формату https://t.me/example
             </span>
             <input type="password" value={regForm.password} onChange={(event) => {setRegForm({...regForm, password: event.target.value})}} required placeholder="Пароль" className={style.text} />
             <input type="password" value={regForm.repeatedPassword} onChange={(event) => {setRegForm({...regForm, repeatedPassword: event.target.value})}} required placeholder="Повтор пароля" className={style.text} />
-            <span class={`${style.error} ${regFormValidate.isPasswordsMatch ? style.hidden : ""}`}>
+            <span className={`${style.error} ${regFormValidate.isPasswordsMatch ? style.hidden : ""}`}>
               Пароли не совпадают
             </span>
-            <span class={`${style.error} ${regFormValidate.isVkOrTg ? style.hidden : ""}`}>
+            <span className={`${style.error} ${regFormValidate.isVkOrTg ? style.hidden : ""}`}>
               Введите хотя бы одну социальную сеть
             </span></>}
       <div>
