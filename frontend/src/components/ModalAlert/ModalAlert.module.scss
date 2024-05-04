@@ -1,0 +1,26 @@
+@charset "UTF-8";
+@use "../../utils/colors.scss" as *;
+
+
+
+.greenButton {
+    transition: .25s;
+    color: $color-grey-50;
+    font-family: inherit;
+    font-size: larger;
+    border-radius: 1rem;
+    border: none;
+    padding: 1rem;
+    width: fit-content;
+    outline: none;
+    cursor: pointer;
+    background-color: $color-green-800;
+
+    &:hover {
+        background-color: $color-green-900;
+    }
+
+    &:active {
+        scale: 0.95;
+    }
+}

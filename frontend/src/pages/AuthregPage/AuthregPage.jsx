@@ -1,7 +1,10 @@
 import React, { useState } from "react"
+import ReactDOM from "react-dom";
 import style from "./AuthregPage.module.scss"
 import { redirect, Link } from "react-router-dom"
-import Modal from '../../components/Modal/Modal'
+import ModalAlert from '../../components/ModalAlert/ModalAlert'
+import Modal from "../../components/Modal/Modal"
+
 
 const AuthregPage = () => {
   const emailRegex = /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z0-9]+$/
@@ -31,7 +34,44 @@ const AuthregPage = () => {
     isVkOrTg: true,
   })
 
-  const [modalShown, setModalVisibility] = useState(true);
+  const [modalShown, setModalVisibility] = useState(false);
+
+  const [errorModalState, setErrorModalState] = useState({
+    visible: false,
+    onClick: () => {let state = errorModalState; state.visible = false; setErrorModalState({...state})}
+  });
+
+  const getCookie = (name, source = document.cookie) => {
+    let matches = source.match(new RegExp(
+      "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+    ));
+    return matches ? decodeURIComponent(matches[1]) : undefined;
+  }
+
+  const setCookie = (name, value, options = {}) => {
+
+    options = {
+      path: '/',
+      // при необходимости добавьте другие значения по умолчанию
+      ...options
+    };
+  
+    if (options.expires instanceof Date) {
+      options.expires = options.expires.toUTCString();
+    }
+  
+    let updatedCookie = encodeURIComponent(name) + "=" + encodeURIComponent(value);
+  
+    for (let optionKey in options) {
+      updatedCookie += "; " + optionKey;
+      let optionValue = options[optionKey];
+      if (optionValue !== true) {
+        updatedCookie += "=" + optionValue;
+      }
+    }
+  
+    document.cookie = updatedCookie;
+  }
 
   const login = () => {
     const res = {
@@ -39,29 +79,41 @@ const AuthregPage = () => {
       password: authForm.password
     }
 
-    alert(JSON.stringify(res))
 
-    fetch("http://10.1.0.101:8000/user/login", {
+    //alert(JSON.stringify(res))
+    //errorModal.modal.open();
+
+    fetch("http://localhost:8000/user/login", {
       method: "POST",
       body: new URLSearchParams(res).toString(),
+      credentials: 'include',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
       }
     })
       .then(response => {
+        console.log(response)
+        if(response.ok) {
+          console.log(response.headers.raw()['set-cookie']);
+          return true;
+        }
+        let state = errorModalState;
+        state.visible = true;
         switch(response.status) {
-          case 200:
-            return true;
           case 204:
-            alert("No Content")
+            state.header = "Нет данных";
+            state.body = "Отправлен пустой запрос";
             break;
           case 400:
-            alert("Bad request")
+            state.header = "Не могу войти";
+            state.body = "Такого пользователя не существует или введён неверный пароль";
             break;
           case 422:
-            alert("Validation Error")
+            state.header = "Не могу войти";
+            state.body = "Введены некорректные данные";
             break;
         }
+        setErrorModalState({...state})
       })
       .then((response) => {/*window.location.pathname = "/"*/})
       .catch((response) => {
@@ -100,8 +152,9 @@ const AuthregPage = () => {
       surname: regForm.surname ? regForm.surname : null,
     }
 
-    fetch("http://10.1.0.101:8000/user/register", {
+    fetch("http://localhosts:8000/user/register", {
       method: "POST",
+      credentials: 'include',
       body: JSON.stringify(res),
       headers: {
         "Content-Type": "application/json"
@@ -109,7 +162,7 @@ const AuthregPage = () => {
     })
       .then(response => response.json())
       .then(response => {
-        setModalVisibility(false);
+        setModalVisibility(true);
       })
       .catch(() => { alert("Ошибка сервера, попробуйте позднее") })
   }
@@ -158,7 +211,8 @@ const AuthregPage = () => {
           <input type="reset" value="Сбросить" />
         </div>
       </form>
-      <Modal shown={modalShown} header="Регистрация прошла успешно" body="Теперь вы можете войти в свой аккаунт" onClick={() => window.location.reload()} buttonText="Войти" />
+      <ModalAlert icon="gis:poi-info" visible={modalShown} header="Регистрация прошла успешно" body="Теперь вы можете войти в свой аккаунт" onClick={() => window.location.reload()} buttonText="Войти" />
+      <ModalAlert icon="bx:error" {...errorModalState} state={errorModalState} />
     </section>
   )
 }
