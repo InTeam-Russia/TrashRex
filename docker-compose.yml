@@ -14,6 +14,7 @@ services:
      - "5432:5432"
     volumes:
      - pgdata:/var/lib/postgresql/data
+     - /:/app
     networks:
       inteamnet:
         ipv4_address: 10.1.0.100
