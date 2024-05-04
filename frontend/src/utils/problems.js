@@ -1,0 +1,35 @@
+export const problemsList = [
+    {
+      id: 1,
+      description: "Мусорная помойка около двенадцатого корпуса СГУ",
+      photo: "public/img/defaultUser.webp",
+      lat: 54.3,
+      lon: 234.23456,
+      author_id: 1,
+      solved_id: null,
+      solution_photo: null,
+      state: "free",
+    },
+    {
+      id: 2,
+      description: "Голубиный помёт около районной поликлиники",
+      photo: "public/img/defaultUser.webp",
+      lat: 35.3,
+      lon: 234.23456,
+      author_id: 1,
+      solved_id: 2,
+      solution_photo: "public/img/defaultUser.webp",
+      state: "free",
+    },
+    {
+      id: 3,
+      description: "Моя хата с краю",
+      photo: "public/img/defaultUser.webp",
+      lat: 54.3,
+      lon: 234.23456,
+      author_id: 2,
+      solved_id: null,
+      solution_photo: null,
+      state: "free",
+    }
+  ]
