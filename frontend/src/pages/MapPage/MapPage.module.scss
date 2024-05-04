@@ -37,4 +37,37 @@
     border: 2px $color-grey-400;
     background-color: color-mix(in srgb, $color-teal-900 75%, transparent 25%);
     cursor: pointer;
+    color: white;
+}
+
+.float-button:active {
+    scale: 0.95
+}
+
+.placeholder {
+    position: fixed;
+    top: calc(50% - 3rem);
+    left: calc(50% - 13rem);
+}
+
+.button {
+    transition: .25s;
+    color: $color-grey-50;
+    font-family: inherit;
+    font-size: larger;
+    border-radius: 0;
+    border: none;
+    padding: .5rem 1rem;
+    outline: none;
+    cursor: pointer;
+    margin-top: 1rem;
+    background-color: $color-green-800;
+
+    &:hover {
+        background-color: $color-green-900;
+    }
+
+    &:active {
+        scale: 0.95;
+    }
 }
