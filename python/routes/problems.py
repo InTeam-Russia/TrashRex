@@ -14,8 +14,7 @@ from routes.auth import auth_router, current_user
 problems_router = APIRouter()
 @problems_router.post("/problems/create",
           tags=["Problems"],
-          summary="Route for creating a problem"
-          )
+          summary="Route for creating a problem")
 async def create_problem(
         description: str, photo: str, lat: float, lon: float,
         user: User = Depends(current_user)):
@@ -33,12 +32,6 @@ async def create_problem(
             )
         )
 
-        achivement_id_check = await added_problems_achivement_check(user.id)
-        if achivement_id_check:
-            await session.execute(insert(user_achivements).values(user_id=user.id, achivement_id=achivement_id_check))
-        await session.commit()
-
-
         await session.commit()
         return JSONResponse(
                 content={
@@ -53,24 +46,23 @@ async def create_problem(
 
 @problems_router.patch("/problems/join/{problem_id}",
            tags=["Problems"],
-           summary="Route for joining a problem"
-           )
+           summary="Route for joining a problem")
 async def join_problem(problem_id: int, user: User = Depends(current_user)):
     async with Async_Session() as session:
-        now_state = await session.execute(
+        problem_row = await session.execute(
             select(problems).where(problems.c.id == problem_id)
         )
         try:
-            now_state = now_state.one()
+            problem_row = problem_row.one()
         except:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail="Problem to join not found")
 
-        if now_state.author_id == user.id:
+        if problem_row.author_id == user.id:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                                 detail="You can't join yours problem")
 
-        if now_state.state == "free":
+        if problem_row.state == "free":
             await session.execute(
                 update(problems).where(problems.c.id == problem_id).values(
                     {"solver_id": user.id, "state": "in_progress"}
