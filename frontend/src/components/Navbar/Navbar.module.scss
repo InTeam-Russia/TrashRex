@@ -1,7 +1,7 @@
 @charset "UTF-8";
 @use "../../utils/colors.scss" as *;
 
-nav {
+.navbar {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -63,4 +63,8 @@ nav {
             }
         }
     }
+}
+
+@media screen and (max-width: 1024px) {
+    
 }
