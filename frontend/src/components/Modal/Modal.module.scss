@@ -9,7 +9,7 @@
     right: 0;
     bottom: 0;
     z-index: 100;
-    color: $color-green-900;
+    /*color: $color-green-900;*/
 }
 
 .modalScreen, .modal {
@@ -19,37 +19,42 @@
     flex-direction: column;
 }
 
-
-.greenButton {
-    transition: .25s;
-    color: $color-grey-50;
-    font-family: inherit;
-    font-size: larger;
-    border-radius: 1rem;
-    border: none;
-    padding: 1rem;
-    width: fit-content;
-    outline: none;
-    cursor: pointer;
-    background-color: $color-green-800;
-
-    &:hover {
-        background-color: $color-green-900;
-    }
-
-    &:active {
-        scale: 0.95;
-    }
-}
-
 .modal {
     width: 500px;
     background: $bg-color;
     box-shadow: 0 0 1rem $color-green-900;
     border-radius: 1rem;
-    padding: 1rem 5rem;
+    padding: 1rem 1rem;
 }
 
 .hidden {
     display: none;
+}
+
+.header {
+    display: flex;
+    width: 100%;
+    gap: 0.5rem;
+}
+
+.header  svg {
+    margin: 0.5em 0em;
+    height: 2.2em;
+    width: 2.2em;
+}
+
+.header  h1 {
+    flex-grow: 1
+}
+
+.close {
+    cursor: pointer;
+    color: $color-green-900;
+    transition: all ease-in-out 0.25s;
+    &:active {
+        scale: 0.75;
+    }
+    &:hover {
+        color: $color-red-800;
+    }
 }

@@ -2,7 +2,7 @@ from fastapi_users.authentication import CookieTransport, AuthenticationBackend
 
 from config import JWT_SECRET_CODE
 
-cookie_transport = CookieTransport(cookie_max_age=3600, cookie_name="Auth_cookie")
+cookie_transport = CookieTransport(cookie_max_age=3600, cookie_name="Auth_cookie",cookie_samesite="None", cookie_domain="localhost")
 
 from fastapi_users.authentication import JWTStrategy
 

@@ -10,7 +10,9 @@ const App = () => {
   const location = useLocation()
 
   const getCurrentUser = async () => {
-    const response = await fetch("http://10.1.0.101:8000/auth/whoami")
+    const response = await fetch("http://localhost:8000/auth/whoami", {
+      credentials: 'include',
+    })
     .then((res) => {
       return res.ok ? res.json() : false
     })
