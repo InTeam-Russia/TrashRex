@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Icon } from "@iconify/react"
 import style from "./Navbar.module.scss"
 
-const Navbar = () => {
+const Navbar = ({ user, setUser }) => {
   const tabsList = [
   {
       route: "/map",
@@ -20,8 +20,6 @@ const Navbar = () => {
       icon: "bx:task",
     }
   ]
-
-  const [user, setUser] = useState(null)
   
   return (
     <nav className={style.navbar}>

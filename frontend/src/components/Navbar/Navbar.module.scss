@@ -9,6 +9,7 @@
     margin: 1rem;
     margin-top: 0;
     position: sticky;
+    z-index: 50;
     top: 1rem;
     background-color: $color-light-green-300;
     border-radius: 1rem;
@@ -66,5 +67,17 @@
 }
 
 @media screen and (max-width: 1024px) {
-    
+    .navbar {
+        bottom: 0;
+        position: fixed;
+        top: unset;
+
+        & a:not(.brand) span {
+            display: none;
+        }
+
+        & a.brand span {
+            font-size: medium;
+        }
+    }
 }
