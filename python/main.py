@@ -10,6 +10,7 @@ from auth.database import User, Async_Session
 from models.models import problems, problem_votes, users
 
 from routes.auth import auth_router
+from routes.events import events_router
 from routes.problems import problems_router
 from routes.voiting import voiting_router
 
@@ -31,9 +32,8 @@ app.add_middleware(
 
 
 app.include_router(auth_router)
-
 app.include_router(problems_router)
-
 app.include_router(voiting_router)
+app.include_router(events_router)
 
 
