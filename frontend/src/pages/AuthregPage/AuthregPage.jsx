@@ -30,17 +30,21 @@ const AuthregPage = () => {
   })
 
   const validateForm = () => {
+    return true
     let flag = true
     if (isAuth) return !flag
-    setRegFormValidate(({...prev}) => ({prev, isVkPattern: vkRegex.test(regForm.vk)}))
     flag = flag && vkRegex.test(regForm.vk)
-    setRegFormValidate(({...prev}) => ({prev, isTgPattern: tgRegex.test(regForm.telegram)}))
     flag = flag && tgRegex.test(regForm.telegram)
-    setRegFormValidate(({...prev}) => ({prev, isPasswordsMatch: (regForm.password === regForm.repeatedPassword)}))
     flag = flag && (regForm.password === regForm.repeatedPassword)
-    setRegFormValidate(({...prev}) => ({prev, isVkOrTg: (regForm.vk + regForm.telegram !== "")}))
     flag = flag && (regForm.vk + regForm.telegram !== "")
     
+    setRegFormValidate(({prev}) => ({
+      isVkPattern: vkRegex.test(regForm.vk),
+      isTgPattern: tgRegex.test(regForm.telegram),
+      isPasswordsMatch: (regForm.password === regForm.repeatedPassword),
+      isVkOrTg: (regForm.vk + regForm.telegram !== ""),
+    }))
+
     return flag
   }
 
@@ -64,13 +68,13 @@ const AuthregPage = () => {
       const res = {
         email: regForm.email,
         password: regForm.password,
-        name: regForm.name ? regForm.name : null,
-        surname: regForm.surname ? regForm.surname : null,
         is_active: true,
         is_superuser: false,
         is_verified: false,
-        vk: regForm.vk ? regForm.vk : null,
         telegram: regForm.telegram ? regForm.telegram : null,
+        vk: regForm.vk ? regForm.vk : null,
+        name: regForm.name ? regForm.name : null,
+        surname: regForm.surname ? regForm.surname : null,
       }
       alert(JSON.stringify(res))
 
@@ -124,6 +128,7 @@ const AuthregPage = () => {
         <input type="reset" value="Сбросить" />  
       </div>
     </form>
+
   </section>
 )}
 
