@@ -5,7 +5,6 @@ from fastapi_users import FastAPIUsers
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
-
 from sqlalchemy import insert, select, update, delete
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
@@ -14,7 +13,7 @@ from auth.database import User, engine
 from auth.manager import get_user_manager
 from auth.schemas import UserRead, UserCreate
 
-from models.models import problems, problem_votes
+from models.models import problems, problem_votes, users
 
 app = FastAPI()
 Async_Session = async_sessionmaker(engine)
@@ -54,10 +53,26 @@ current_user = fastapi_users.current_user()
 @app.get("/auth/whoami",
          tags=["auth"],
          summary="WhoAmI")
-def whoami(user: User = Depends(current_user)):
-    return {
-        "id": user.id,
-    }
+async def whoami(asked_user: User = Depends(current_user)):
+    async with Async_Session() as session:
+        user_row = await session.execute(
+            select(users.c.id, users.c.email, users.c.telegram, users.c.vk, users.c.photo, users.c.name, users.c.surname).where(users.c.id == asked_user.id)
+        )
+        user_row = user_row.first()
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content=
+            {
+            "id": user_row.id,
+            "email": user_row.email,
+            "telegram": user_row.telegram,
+            "vk": user_row.vk,
+            "photo": user_row.photo,
+            "name": user_row.name,
+            "surname": user_row.surname
+            }
+        )
+
 
 @app.post("/problems/create",
           tags=["Problems"],
@@ -120,12 +135,22 @@ async def join_problem(problem_id: int, user: User = Depends(current_user)):
            )
 async def finish_problem(problem_id: int, user: User = Depends(current_user)):
     async with Async_Session() as session:
-        await session.execute(
-            update(problems).where(problems.c.id == problem_id).values(
-                {"state": "completed"}
-            )
+        now_state = await session.execute(
+            select(problems).where(problems.c.id == problem_id)
         )
-        await session.commit()
+        now_state = now_state.one()
+        if (now_state.state == "on_verification") and (now_state.author_id == user.id):
+            await session.execute(
+                update(problems).where(problems.c.id == problem_id).values(
+                    {"state": "completed"}
+                )
+            )
+            await session.commit()
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_406_NOT_ACCEPTABLE,
+                detail="You can't finish a problem which is not yours or not on verification"
+            )
 
 @app.patch("/problems/verificate/{id}",
            tags=["Problems"],
@@ -133,12 +158,22 @@ async def finish_problem(problem_id: int, user: User = Depends(current_user)):
            )
 async def verificate_problem(problem_id: int, user: User = Depends(current_user)):
     async with Async_Session() as session:
-        await session.execute(
-            update(problems).where(problems.c.id == problem_id).values(
-                {"state": "on_verification"}
-            )
+        who_is_solver = await session.execute(
+            select(problems).where(problems.c.id == problem_id)
         )
-        await session.commit()
+        who_is_solver = who_is_solver.one()
+        if (who_is_solver.solver_id == user.id) and (who_is_solver.state == "in_progress"):
+            await session.execute(
+                update(problems).where(problems.c.id == problem_id).values(
+                    {"state": "on_verification"}
+                )
+            )
+            await session.commit()
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_406_NOT_ACCEPTABLE,
+                detail="You can't send on verification not yours task or task which is not in progress"
+            )
 
 @app.patch("/problems/voting/{id}",
            tags=["Problems"],
@@ -146,12 +181,22 @@ async def verificate_problem(problem_id: int, user: User = Depends(current_user)
            )
 async def voting_problem(problem_id: int, user: User = Depends(current_user)):
     async with Async_Session() as session:
-        await session.execute(
-            update(problems).where(problems.c.id == problem_id).values(
-                {"state": "on_voting"}
-            )
+        who_is_author = await session.execute(
+            select(problems).where(problems.c.id == problem_id)
         )
-        await session.commit()
+        who_is_author = who_is_author.one()
+        if who_is_author == user.id:
+            await session.execute(
+                update(problems).where(problems.c.id == problem_id).values(
+                    {"state": "on_voting"}
+                )
+            )
+            await session.commit()
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_406_NOT_ACCEPTABLE,
+                detail="You can't send on voting not yours task"
+                )
 
 @app.get("/problems/all",
          tags=["Problems"],
@@ -170,6 +215,15 @@ async def all_problems(user: User = Depends(current_user)):
           summary="Route for voting on a problem with {problem_id}.")
 async def vote_problem(problem_id: int, vote: int, user: User = Depends(current_user)):
     async with Async_Session() as session:
+        is_on_voiting = await session.execute(
+            select(problems).where(problems.c.id == problem_id)
+        )
+        is_on_voiting = is_on_voiting.one()
+        if is_on_voiting.state != "on_voting":
+            raise HTTPException(
+                status_code=status.HTTP_406_NOT_ACCEPTABLE,
+                detail="You can't vote on task which is not on voiting"
+            )
         await session.execute(
             insert(problem_votes).values(
                 user_id=user.id,
@@ -177,8 +231,31 @@ async def vote_problem(problem_id: int, vote: int, user: User = Depends(current_
                 vote=vote
             )
         )
+
         await session.commit()
-        return {"status": "Your vote has been written!"}
+
+        all_votes = await session.execute(
+            select(problem_votes).where(problems.c.id == problem_id)
+        )
+        all_votes = len(all_votes.all())
+
+        positive_votes = await session.execute(
+            select(problem_votes).where(problems.c.id == problem_id & vote == 1)
+        )
+        positive_votes = len(positive_votes.all())
+
+        if (positive_votes / all_votes > 0.6) and (all_votes > 10):
+            await delete_from_voting(problem_id)
+            raise HTTPException(
+                status_code=status.HTTP_205_RESET_CONTENT,
+                detail="Enough votes and positive votes to complete voting"
+            )
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_202_ACCEPTED,
+                detail="Your vote has been written!"
+            )
+
 
 @app.delete("/voting/delete_from_voting/{problem_id}",
             tags=["Voting"],
@@ -190,5 +267,7 @@ async def delete_from_voting(problem_id: int, user: User = Depends(current_user)
             delete(problem_votes).where(problem_votes.c.problem_id == problem_id)
         )
         await session.commit()
+
+
 
 
