@@ -71,17 +71,17 @@ event_members = Table(
     Column("user_id", Integer, ForeignKey("users.id"), nullable=False),
     Column("is_member_good", Boolean,  nullable=True),
 )
-achievements = Table(
-    "achievements",
+achivements = Table(
+    "achivements",
     metadata,
     Column("id", Integer, primary_key=True),
     Column("name", String(128), nullable=False),
     Column("description", String(1024), nullable=False),
     Column("logo", String(256), nullable=False)
 )
-user_achievements = Table(
-    "user_achievements",
+user_achivements = Table(
+    "user_achivements",
     metadata,
     Column("user_id", Integer, ForeignKey("users.id"), nullable=False),
-    Column("achievement_id", Integer, ForeignKey("achievements.id"), nullable=False),
+    Column("achivement_id", Integer, ForeignKey("achivements.id"), nullable=False),
 )

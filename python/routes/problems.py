@@ -4,7 +4,9 @@ from fastapi import Depends, HTTPException, status
 from fastapi.responses import JSONResponse
 from sqlalchemy import insert, select, update
 from auth.database import User, engine, Async_Session
-from models.models import problems, problem_votes, users
+from extra.achivements import solved_problems_achivement_check, added_problems_achivement_check
+from extra.levels import move_level
+from models.models import problems, problem_votes, users, user_achivements
 from routes.auth import auth_router, current_user
 
 problems_router = APIRouter()
@@ -28,11 +30,15 @@ async def create_problem(
             solution_photo=None
             )
         )
+
         await session.execute(
-            update(users).where(users.id == user.id).values(
-                {"events_added":  + 1}
-            )
+            update(users).where(users.c.id == user.id).values(problems_added=users.c.problems_added + 1)
         )
+        achivement_id_check = await added_problems_achivement_check(user.id)
+        if achivement_id_check:
+            await session.execute(insert(user_achivements).values(user_id=user.id, achivement_id=achivement_id_check))
+        await session.commit()
+
 
         await session.commit()
         return JSONResponse(
@@ -85,6 +91,19 @@ async def finish_problem(problem_id: int, user: User = Depends(current_user)):
                     {"state": "completed"}
                 )
             )
+            await session.execute(
+                update(users).where(users.c.id == now_state.solver_id).values(problems_solved=users.c.problems_solved + 1,
+                                                                                exp=users.c.exp + 15)
+            )
+            await session.execute(
+                update(users).where(users.c.id == user.id).values(problems_added=users.c.problems_added + 1,
+                                                                                exp=users.c.exp + 7)
+            )
+            await move_level(now_state.solver_id)
+            await move_level(user.id)
+            achivement_id_check = await solved_problems_achivement_check(user.id)
+            if achivement_id_check:
+                await session.execute(insert(user_achivements).values(user_id=user.id, achivement_id=achivement_id_check))
             await session.commit()
         else:
             raise HTTPException(
@@ -142,7 +161,7 @@ async def voting_problem(problem_id: int, user: User = Depends(current_user)):
          tags=["Problems"],
          summary="Route for selecting all problems."
          )
-async def all_problems(user: User = Depends(current_user)):
+async def all_problems():
     async with Async_Session() as session:
         results = await session.execute(
             select(problems).order_by(problems.c.id)
@@ -154,10 +173,21 @@ async def all_problems(user: User = Depends(current_user)):
          tags=["Problems"],
          summary="Route for selecting all free problems."
          )
-async def all_free_problems(user: User = Depends(current_user)):
+async def all_free_problems():
     async with Async_Session() as session:
         results = await session.execute(
             select(problems).where(problems.c.state == "free").order_by(problems.c.id)
+        )
+        answer = (json.dumps(dict(row._asdict())) for row in results)
+        return answer
+
+@problems_router.get("/problems/my_problems",
+                     tags=["Problems"],
+                     summary="Route for selecting problems created by user.")
+async def my_problems(user: User = Depends(current_user)):
+    async with Async_Session() as session:
+        results = await session.execute(
+            select(problems).where(problems.c.author_id == user.id)
         )
         answer = (json.dumps(dict(row._asdict())) for row in results)
         return answer
