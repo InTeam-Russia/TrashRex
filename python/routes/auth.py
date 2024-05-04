@@ -59,5 +59,32 @@ async def whoami(asked_user: User = Depends(current_user)):
             "surname": user_row.surname
             }
         )
+@auth_router.post("/auth/user/{target_id}",
+                  tags=["auth"],
+                  summary="Select user")
+async def select_user(target_id: int):
+    async with Async_Session() as session:
+        user_row = await session.execute(
+            select(users.c.id, users.c.email, users.c.telegram, users.c.vk, users.c.photo, users.c.name,
+                   users.c.surname).where(users.c.id == target_id)
+        )
+        try:
+            user_row = user_row.first()
+        except:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail="User not found")
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content=
+            {
+                "id": user_row.id,
+                "email": user_row.email,
+                "telegram": user_row.telegram,
+                "vk": user_row.vk,
+                "photo": user_row.photo,
+                "name": user_row.name,
+                "surname": user_row.surname
+            }
+        )
 
 

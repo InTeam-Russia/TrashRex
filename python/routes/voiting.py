@@ -54,9 +54,6 @@ async def vote_problem(problem_id: int, vote: int, user: User = Depends(current_
                 detail="Your vote has been written!"
             )
 
-@voiting_router.delete("/voting/delete_from_voting/{problem_id}",
-            tags=["Voting"],
-            summary="Route for deleting a voting on a problem with {problem_id}.")
 async def delete_from_voting(problem_id: int, user: User = Depends(current_user)):
     async with Async_Session() as session:
         await finish_problem(problem_id)

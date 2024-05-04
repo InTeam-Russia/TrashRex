@@ -17,17 +17,23 @@ async def create_problem(
         user: User = Depends(current_user)):
 
     async with Async_Session() as session:
-        q = insert(problems).values(
+        await session.execute(
+            insert(problems).values(
             description=description,
-            photo= photo,
+            photo=photo,
             lat=lat,
             lon=lon,
             author_id=user.id,
             solver_id=None,
             solution_photo=None
+            )
+        )
+        await session.execute(
+            update(users).where(users.id == user.id).values(
+                {"events_added":  + 1}
+            )
         )
 
-        await session.execute(q)
         await session.commit()
         return JSONResponse(
                 content={
