@@ -43,6 +43,10 @@ const MapPage = () => {
     }
   }
 
+  const handlePlacemarkClick = (event) => {
+    alert(event.get("target").geometry.lat)
+  }
+
   function onActionTickComplete(e) {
     const projection = e.get('target').options.get('projection');
     const { globalPixelCenter, zoom } = e.get('tick');
@@ -67,7 +71,7 @@ const MapPage = () => {
           <Placemark options={{iconColor: "#ff0000"}} geometry={coord} />
           <Clusterer>
           {placemarks.map((coord, index) => (
-            <Placemark key={index} geometry={coord} />
+            <Placemark onClick={handlePlacemarkClick} key={index} geometry={coord} />
           ))}
           </Clusterer>
           </Map>
