@@ -44,8 +44,10 @@ const MapPage = () => {
   }
 
   const handlePlacemarkClick = (event) => {
-    alert(event.get("target").geometry.lat)
+    alert(event.get("target").geometry)
   }
+
+  //ferfr
 
   function onActionTickComplete(e) {
     const projection = e.get('target').options.get('projection');
