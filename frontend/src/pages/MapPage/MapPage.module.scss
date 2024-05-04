@@ -9,6 +9,7 @@
     left: 0;
     right: 0;
     bottom: 0;
+    z-index: 10;
 }
 
 .map {
@@ -22,4 +23,18 @@
     width: 100px;
     height: 100px;
     background: red
+}
+
+.float-button {
+    display: flex;
+    position: fixed;
+    top: 7rem;
+    right: 1rem;
+    z-index: 45;
+    padding: .5rem 1rem;
+    border-radius: 20rem;
+    font-size: xx-large;
+    border: 2px $color-grey-400;
+    background-color: color-mix(in srgb, $color-teal-900 75%, transparent 25%);
+    cursor: pointer;
 }

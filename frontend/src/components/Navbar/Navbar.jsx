@@ -42,7 +42,7 @@ const Navbar = ({ user, setUser }) => {
             </a>)}
           <a href={user ? "/profile" : "/authreg"} className={style.tab}>
               <span className={style.icon}>
-                <Icon icon="fluent:person-star-32-filled" width="1em" height="1em" />
+                <Icon icon="fluent:person-star-32-regular" width="1em" height="1em" />
               </span>
               <span>
                   {user ? `${user.name} ${user.surname}` : "Войти"}
