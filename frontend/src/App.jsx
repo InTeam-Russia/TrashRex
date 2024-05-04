@@ -10,14 +10,14 @@ const App = () => {
   const location = useLocation()
 
   const getCurrentUser = async () => {
-    return await fetch("http://10.1.0.101:8000/auth/whoami")
+    const response = await fetch("http://10.1.0.101:8000/auth/whoami")
     .then((res) => {
       return res.ok ? res.json() : false
     })
     .catch(() => {
-      alert("Ошибка сервера, извините :(")
       return false
     })
+    return response
   }
 
   useEffect(() => {
