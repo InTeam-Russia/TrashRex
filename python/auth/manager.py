@@ -3,6 +3,7 @@ from typing import Optional
 
 from fastapi import Depends, Request
 from fastapi_users import BaseUserManager, UUIDIDMixin, IntegerIDMixin, schemas, models
+from fastapi_users.exceptions import UserAlreadyExists
 
 from .database import User, get_user_db
 
@@ -37,7 +38,7 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
 
         existing_user = await self.user_db.get_by_email(user_create.email)
         if existing_user is not None:
-            raise exceptions.UserAlreadyExists()
+            raise UserAlreadyExists()
 
         user_dict = (
             user_create.create_update_dict()

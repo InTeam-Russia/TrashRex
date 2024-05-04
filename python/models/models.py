@@ -40,3 +40,10 @@ problems = Table(
     Column("solution_photo", String, nullable=False),
     Column("state", String, default="free", nullable=False),
 )
+problem_votes = Table(
+    "problem_votes",
+    metadata,
+    Column("user_id", Integer, ForeignKey("users.id"), nullable=False),
+    Column("problem_id", Integer, ForeignKey("problems.id"), nullable=False),
+    Column("logo", String(256), nullable=False),
+)
