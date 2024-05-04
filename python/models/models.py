@@ -26,6 +26,12 @@ users = Table(
     Column("vk", String(256), nullable=True),
     Column("name", String(256), nullable=False),
     Column("surname", String(256), nullable=True),
+    Column("problems_added", Integer, default=0, nullable=False),
+    Column("problems_solved", Integer, default=0, nullable=False),
+    Column("events_added", Integer, default=0, nullable=False),
+    Column("events_visited", Integer, default=0, nullable=False),
+    Column("exp", Integer, default=0, nullable=False),
+    Column("level", Integer, default=1, nullable=False),
 )
 problems = Table(
     "problems",

@@ -9,7 +9,7 @@ from fastapi_users.authentication import JWTStrategy
 SECRET = JWT_SECRET_CODE
 
 def get_jwt_strategy() -> JWTStrategy:
-    return JWTStrategy(secret=SECRET, lifetime_seconds=3600)
+    return JWTStrategy(secret=SECRET, lifetime_seconds=86400)
 
 auth_backend = AuthenticationBackend(
     name="jwt",

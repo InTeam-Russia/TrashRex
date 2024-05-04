@@ -28,6 +28,11 @@ async def create_problem(
             solution_photo=None
             )
         )
+        await session.execute(
+            update(users).where(users.id == user.id).values(
+                {"events_added":  + 1}
+            )
+        )
 
         await session.commit()
         return JSONResponse(
