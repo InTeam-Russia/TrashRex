@@ -22,6 +22,33 @@
     }
 }
 
+
+
+.form input[type=submit], .form input[type=reset], .greenButton {
+    transition: .25s;
+    color: $color-grey-50;
+    font-family: inherit;
+    font-size: larger;
+    border-radius: 1rem;
+    border: none;
+    padding: 1rem;
+    width: 50%;
+    outline: none;
+    cursor: pointer;
+
+    &:active {
+        scale: 0.95;
+    }
+}
+
+.form input[type=submit], .greenButton {
+    background-color: $color-green-800;
+
+    &:hover {
+        background-color: $color-green-900;
+    }
+}
+
 .form {
     display: flex;
     flex-direction: column;
@@ -51,32 +78,6 @@
         gap: 1rem;
     }
 
-    & input[type=submit],
-    & input[type=reset] {
-        transition: .25s;
-        color: $color-grey-50;
-        font-family: inherit;
-        font-size: larger;
-        border-radius: 1rem;
-        border: none;
-        padding: 1rem;
-        width: 50%;
-        outline: none;
-        cursor: pointer;
-
-        &:active {
-            scale: 0.95;
-        }
-    }
-
-    & input[type=submit] {
-        background-color: $color-green-800;
-
-        &:hover {
-            background-color: $color-green-900;
-        }
-    }
-
     & input[type=reset] {
         background-color: color-mix(in srgb, $color-red-800 75%, transparent 25%);
 
@@ -95,6 +96,40 @@
     &.hidden {
         display: none;
     }
+}
+
+.modalScreen {
+    background-color: rgba(0,0,0,0.5);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100;
+    color: $color-green-900;
+}
+
+.modalScreen, .modal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.greenButton {
+    width: fit-content
+}
+
+.modal {
+    width: 500px;
+    background: $bg-color;
+    box-shadow: 0 0 1rem $color-green-900;
+    border-radius: 1rem;
+    padding: 1rem 5rem;
+}
+
+.hidden {
+    display: none;
 }
 
 @media screen and (max-width: 1024px) {
