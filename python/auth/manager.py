@@ -1,8 +1,7 @@
-from asyncio import exceptions
 from typing import Optional
 
 from fastapi import Depends, Request
-from fastapi_users import BaseUserManager, UUIDIDMixin, IntegerIDMixin, schemas, models
+from fastapi_users import BaseUserManager, IntegerIDMixin, schemas, models
 from fastapi_users.exceptions import UserAlreadyExists
 
 from .database import User, get_user_db

@@ -1,5 +1,6 @@
-from typing import Optional
+from typing import Optional, Annotated
 
+from fastapi import Query
 from fastapi_users import schemas
 
 class UserRead(schemas.BaseUser[int]):
@@ -14,7 +15,7 @@ class UserRead(schemas.BaseUser[int]):
     surname: str = None
 
 class UserCreate(schemas.BaseUserCreate):
-    email: str
+    email: Annotated[str, Query(pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")]
     password: str
     is_active: Optional[bool] = True
     is_superuser: Optional[bool] = False
