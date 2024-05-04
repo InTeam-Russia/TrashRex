@@ -144,3 +144,15 @@ async def all_problems(user: User = Depends(current_user)):
         answer = (json.dumps(dict(row._asdict())) for row in results)
         return answer
 
+@problems_router.get("/problems/all_free",
+         tags=["Problems"],
+         summary="Route for selecting all free problems."
+         )
+async def all_free_problems(user: User = Depends(current_user)):
+    async with Async_Session() as session:
+        results = await session.execute(
+            select(problems).where(problems.c.state == "free").order_by(problems.c.id)
+        )
+        answer = (json.dumps(dict(row._asdict())) for row in results)
+        return answer
+

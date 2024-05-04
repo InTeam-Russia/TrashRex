@@ -13,7 +13,7 @@ class States(enum.Enum):
     completed = "completed"
 
 users = Table(
-"users",
+"user",
     metadata,
     Column("id", Integer, primary_key=True),
     Column("email", String(320), nullable=False),
