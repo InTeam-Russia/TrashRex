@@ -1,6 +1,7 @@
 import React, { useState } from "react"
 import style from "./AuthregPage.module.scss"
 import { redirect, Link } from "react-router-dom"
+import Modal from '../../components/Modal/Modal'
 
 const AuthregPage = () => {
   const emailRegex = /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z0-9]+$/
@@ -30,25 +31,39 @@ const AuthregPage = () => {
     isVkOrTg: true,
   })
 
-  const [modalHidden, setModalHiddenity] = useState(true);
+  const [modalShown, setModalVisibility] = useState(true);
 
   const login = () => {
     const res = {
       username: authForm.email,
-      password
+      password: authForm.password
     }
 
     alert(JSON.stringify(res))
 
     fetch("http://10.1.0.101:8000/user/login", {
       method: "POST",
-      body: JSON.stringify(res),
+      body: new URLSearchParams(res).toString(),
       headers: {
-        "Content-Type": "application/json"
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
       }
     })
-      .then(response => response.json())
-      .then(() => {/*window.location.pathname = "/"*/})
+      .then(response => {
+        switch(response.status) {
+          case 200:
+            return true;
+          case 204:
+            alert("No Content")
+            break;
+          case 400:
+            alert("Bad request")
+            break;
+          case 422:
+            alert("Validation Error")
+            break;
+        }
+      })
+      .then((response) => {/*window.location.pathname = "/"*/})
       .catch((response) => {
         console.log(response);
         alert("Ошибка сервера, попробуйте позднее")
@@ -59,7 +74,7 @@ const AuthregPage = () => {
     let flag = true
     flag = flag && vkRegex.test(regForm.vk)
     flag = flag && tgRegex.test(regForm.telegram)
-    flag = flag && (regForm.password === regForm.repeatedPassword)
+    flag = flag && (regForm.password === regForm.rNavbarepeatedPassword)
     flag = flag && (regForm.vk + regForm.telegram !== "")
 
     setRegFormValidate(({ prev }) => ({
@@ -94,7 +109,7 @@ const AuthregPage = () => {
     })
       .then(response => response.json())
       .then(response => {
-        setModalHiddenity(false);
+        setModalVisibility(false);
       })
       .catch(() => { alert("Ошибка сервера, попробуйте позднее") })
   }
@@ -143,13 +158,7 @@ const AuthregPage = () => {
           <input type="reset" value="Сбросить" />
         </div>
       </form>
-      <div className={`${style.modalScreen} ${modalHidden && style.hidden}`}>
-        <section className={style.modal}>
-          <h1>Регистрация прошла успешно</h1>
-          <p>Теперь вы можете войти в свой аккаунт</p>
-          <button onClick={() => window.location.reload()} className={style.greenButton} >Войти</button>
-        </section>
-      </div>
+      <Modal shown={modalShown} header="Регистрация прошла успешно" body="Теперь вы можете войти в свой аккаунт" onClick={() => window.location.reload()} buttonText="Войти" />
     </section>
   )
 }
