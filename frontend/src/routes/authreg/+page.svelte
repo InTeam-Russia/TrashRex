@@ -29,6 +29,7 @@
         isVkPattern: true,
         isTgPattern: true,
         isPasswordsMatch: true,
+        isVkOrTg: true,
     }
 
     const validateForm = (event) => {
@@ -45,6 +46,8 @@
             flag = flag && tgRegex.test(regForm.telegram)
             regFormValidate.isPasswordsMatch = (regForm.password === regForm.repeatedPassword)
             flag = flag && (regForm.password === regForm.repeatedPassword)
+            regForm.isVkOrTg = (regForm.vk + regForm.telegram !== "")
+            flag = flag && (regForm.vk + regForm.telegram !== "")
         }
 
         return !flag
@@ -52,7 +55,42 @@
 
     const handleSubmit = (event) => {
         if (!validateForm()) return
-        alert(Success)
+        
+        if (isAuth) {
+            const res = {...authForm}
+
+            fetch("http://10.1.0.101:8000/user/login", {
+                method: "POST",
+                body: JSON.stringify(res),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+            .then(response => response.json())
+            .catch(() => {alert("Ошибка сервера, попробуйте позднее")})
+        } else {
+            const res = {
+                email: regForm.email,
+                password: regForm.password,
+                name: regForm.name ? regForm.name : null,
+                surname: regForm.surname ? regForm.surname : null,
+                is_active: true,
+                is_superuser: false,
+                is_verified: false,
+                vk: regForm.vk ? regForm.vk : null,
+                telegram: regForm.telegram ? regForm.telegram : null,
+            }
+
+            fetch("http://10.1.0.101:8000/user/register", {
+                method: "POST",
+                body: JSON.stringify(res),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+            .then(response => response.json())
+            .catch(() => {alert("Ошибка сервера, попробуйте позднее")})
+        }
     }
 </script>
 
@@ -87,6 +125,9 @@
             <input type="password" bind:value={regForm.repeatedPassword} required placeholder="Повтор пароля" class="text">
             <span class={`error ${regFormValidate.isPasswordsMatch ? "hidden" : ""}`}>
                 Пароли не совпадают
+            </span>
+            <span class={`error ${regFormValidate.isVkOrTg ? "hidden" : ""}`}>
+                Введите хотя бы одну социальную сеть
             </span>
         {/if}
         <div>

@@ -1,6 +1,4 @@
-/data/
 venv
 .idea
 .venv
-/go/
 __pycache__/
