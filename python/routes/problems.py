@@ -91,7 +91,6 @@ async def finish_problem(problem_id: int, user: User = Depends(current_user)):
         now_state = await session.execute(
             select(problems).where(problems.c.id == problem_id)
         )
-        print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
         try:
             now_state = now_state.one()
         except:
@@ -99,28 +98,24 @@ async def finish_problem(problem_id: int, user: User = Depends(current_user)):
                                 detail="Problem to finish not found")
 
         if (now_state.state == "on_verification") and (now_state.author_id == user.id):
-            print("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")
             await session.execute(
                 update(problems).where(problems.c.id == problem_id).values(state="completed")
             )
-            print("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC")
             await session.execute(
                 update(users).where(users.c.id == now_state.solver_id).values(problems_solved=users.c.problems_solved + 1,
                                                                                 exp=users.c.exp + 15)
             )
-            print("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD")
             await session.execute(
                 update(users).where(users.c.id == user.id).values(problems_added=users.c.problems_added + 1,
                                                                                 exp=users.c.exp + 7)
             )
-            session.commit()
-            print("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
+            await session.commit()
+
             new_solver_lvl = await move_level(now_state.solver_id)
             await session.execute(
                 update(users).where(users.c.id == now_state.solver_id).values(level=new_solver_lvl)
             )
 
-            print("MOVEMOVEMOVEMVEOVEOEVOEVOVEOEVOVEOVEOVEOOVE")
             new_user_lvl = await move_level(user.id)
             await session.execute(
                 update(users).where(users.c.id == user.id).values(level=new_user_lvl)
