@@ -74,18 +74,18 @@ services:
 #      - "8080:8080"
 #    volumes:
 #      - ./go:/usr/local/go/src/
-  apache:
-    build: ./apache
-    container_name: apache_php
-    restart: always
-    ports:
-      - 8080:80
-    volumes:
-      - ./apache/www:/htdocs
-      - ./public:/public
-    networks:
-      inteamnet:
-        ipv4_address: 10.1.0.103
+#  apache:
+#    build: ./apache
+#    container_name: apache_php
+#    restart: always
+#    ports:
+#      - 8080:80
+#    volumes:
+#      - ./apache/www:/htdocs
+#      - ./public:/public
+#    networks:
+#      inteamnet:
+#        ipv4_address: 10.1.0.103
 
 
 networks:
