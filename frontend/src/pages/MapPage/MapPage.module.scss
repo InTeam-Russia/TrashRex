@@ -2,7 +2,7 @@
 @use "../../utils/colors.scss" as *;
 
 .ymaps {
-    display: absolute;
+    position: absolute;
     width: 100dvw;
     height: 100dvh;
     top: 0;
@@ -16,4 +16,10 @@
     place-content: center;
     width: 100dvw;
     height: 100dvh;
+}
+
+.marker {
+    width: 100px;
+    height: 100px;
+    background: red
 }
