@@ -3,6 +3,8 @@ import json
 from fastapi import Depends, HTTPException, status
 from fastapi.responses import JSONResponse
 from sqlalchemy import insert, select, update
+from sqlalchemy.exc import NoResultFound
+
 from auth.database import User, engine, Async_Session
 from extra.achivements import solved_problems_achivement_check, added_problems_achivement_check
 from extra.levels import move_level
@@ -31,9 +33,6 @@ async def create_problem(
             )
         )
 
-        await session.execute(
-            update(users).where(users.c.id == user.id).values(problems_added=users.c.problems_added + 1)
-        )
         achivement_id_check = await added_problems_achivement_check(user.id)
         if achivement_id_check:
             await session.execute(insert(user_achivements).values(user_id=user.id, achivement_id=achivement_id_check))
@@ -61,7 +60,15 @@ async def join_problem(problem_id: int, user: User = Depends(current_user)):
         now_state = await session.execute(
             select(problems).where(problems.c.id == problem_id)
         )
-        now_state = now_state.one()
+        try:
+            now_state = now_state.one()
+        except:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail="Problem to join not found")
+
+        if now_state.author_id == user.id:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                                detail="You can't join yours problem")
 
         if now_state.state == "free":
             await session.execute(
@@ -84,23 +91,41 @@ async def finish_problem(problem_id: int, user: User = Depends(current_user)):
         now_state = await session.execute(
             select(problems).where(problems.c.id == problem_id)
         )
-        now_state = now_state.one()
+        print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+        try:
+            now_state = now_state.one()
+        except:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail="Problem to finish not found")
+
         if (now_state.state == "on_verification") and (now_state.author_id == user.id):
+            print("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")
             await session.execute(
-                update(problems).where(problems.c.id == problem_id).values(
-                    {"state": "completed"}
-                )
+                update(problems).where(problems.c.id == problem_id).values(state="completed")
             )
+            print("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC")
             await session.execute(
                 update(users).where(users.c.id == now_state.solver_id).values(problems_solved=users.c.problems_solved + 1,
                                                                                 exp=users.c.exp + 15)
             )
+            print("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD")
             await session.execute(
                 update(users).where(users.c.id == user.id).values(problems_added=users.c.problems_added + 1,
                                                                                 exp=users.c.exp + 7)
             )
-            await move_level(now_state.solver_id)
-            await move_level(user.id)
+            session.commit()
+            print("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
+            new_solver_lvl = await move_level(now_state.solver_id)
+            await session.execute(
+                update(users).where(users.c.id == now_state.solver_id).values(level=new_solver_lvl)
+            )
+
+            print("MOVEMOVEMOVEMVEOVEOEVOEVOVEOEVOVEOVEOVEOOVE")
+            new_user_lvl = await move_level(user.id)
+            await session.execute(
+                update(users).where(users.c.id == user.id).values(level=new_user_lvl)
+            )
+            print("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")
             achivement_id_check = await solved_problems_achivement_check(user.id)
             if achivement_id_check:
                 await session.execute(insert(user_achivements).values(user_id=user.id, achivement_id=achivement_id_check))
@@ -120,7 +145,12 @@ async def verificate_problem(problem_id: int, user: User = Depends(current_user)
         who_is_solver = await session.execute(
             select(problems).where(problems.c.id == problem_id)
         )
-        who_is_solver = who_is_solver.one()
+        try:
+            who_is_solver = who_is_solver.one()
+        except:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail="Problem to verificate not found")
+
         if (who_is_solver.solver_id == user.id) and (who_is_solver.state == "in_progress"):
             await session.execute(
                 update(problems).where(problems.c.id == problem_id).values(
@@ -143,8 +173,15 @@ async def voting_problem(problem_id: int, user: User = Depends(current_user)):
         who_is_author = await session.execute(
             select(problems).where(problems.c.id == problem_id)
         )
-        who_is_author = who_is_author.one()
-        if who_is_author == user.id:
+        try:
+            who_is_author = who_is_author.one()
+        except:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail="Problem to send on voting not found")
+        if who_is_author.state != "on_verification":
+            raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE,
+                                detail="You can't send on voting task which is not on verification")
+        if who_is_author.author_id == user.id:
             await session.execute(
                 update(problems).where(problems.c.id == problem_id).values(
                     {"state": "on_voting"}

@@ -8,7 +8,7 @@ from starlette.responses import JSONResponse
 
 from auth.database import User, Async_Session
 from extra.achivements import added_events_achivement_check, visited_events_achivement_check
-from extra.levels import move_level
+#from extra.levels import move_level
 from models.models import problems, events, event_members, users, user_achivements
 from routes.auth import current_user
 
@@ -220,6 +220,6 @@ async def review_on(event_id: int, user_id: int, review: bool, user: User = Depe
                 update(users).where(users.c.id == event_members.c.user_id).values(exp=users.c.exp + 20).where(
                     event_members.c.event_id == event_id)
             )
-            await move_level(user.id)
+            #await move_level(user.id)
         await session.commit()
         return {"status": "Review completed!"}

@@ -1,7 +1,7 @@
-from sqlalchemy import select
+from sqlalchemy import select, update, delete
 
 from auth.database import Async_Session
-from models.models import users
+from models.models import users, problems
 
 exp_to_levels = {
     0: 1,
@@ -23,7 +23,8 @@ async def move_level(user_id):
             select(users).where(users.c.id == user_id)
         )
         user_row = user_row.one()
+        temp_lvl = 0
         for key in exp_to_levels:
             if user_row.exp >= key:
-                user_row.level = exp_to_levels[key]
-        await session.commit()
+                temp_lvl = exp_to_levels[key]
+        return temp_lvl

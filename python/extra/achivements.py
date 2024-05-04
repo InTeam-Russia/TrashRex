@@ -18,6 +18,7 @@ async def solved_problems_achivement_check(user_id):
         for key in solved_problems_to_achivement_id:
             if user_row.problems_solved == key:
                 return solved_problems_to_achivement_id[key]
+        return None
 
 added_problems_to_achivement_id = {
     1: 2,
@@ -33,7 +34,7 @@ async def added_problems_achivement_check(user_id):
         for key in added_problems_to_achivement_id:
             if user_row.problems_added == key:
                 return added_problems_to_achivement_id[key]
-
+        return None
 visited_events_to_achivement_id = {
     1: 3,
     5: 7,
@@ -48,6 +49,8 @@ async def visited_events_achivement_check(user_id):
         for key in visited_events_to_achivement_id:
             if user_row.events_visited == key:
                 return visited_events_to_achivement_id[key]
+        return None
+
 added_events_to_achivement_id = {
     1: 4,
     3: 8,
@@ -62,3 +65,4 @@ async def added_events_achivement_check(user_id):
         for key in added_events_to_achivement_id:
             if user_row.events_added == key:
                 return added_events_to_achivement_id[key]
+        return None
