@@ -120,10 +120,15 @@ async def finish_problem(problem_id: int, user: User = Depends(current_user)):
             await session.execute(
                 update(users).where(users.c.id == user.id).values(level=new_user_lvl)
             )
-            print("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")
-            achivement_id_check = await solved_problems_achivement_check(user.id)
-            if achivement_id_check:
-                await session.execute(insert(user_achivements).values(user_id=user.id, achivement_id=achivement_id_check))
+
+            solver_achivement_id_check = await solved_problems_achivement_check(now_state.solver_id)
+            if solver_achivement_id_check:
+                await session.execute(insert(user_achivements).values(user_id=now_state.solver_id, achivement_id=solver_achivement_id_check))
+
+            author_achivement_id_check = await added_problems_achivement_check(user.id)
+            if author_achivement_id_check:
+                await session.execute(insert(user_achivements).values(user_id=user.id, achivement_id=author_achivement_id_check))
+
             await session.commit()
         else:
             raise HTTPException(
