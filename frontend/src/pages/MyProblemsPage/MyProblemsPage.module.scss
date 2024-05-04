@@ -1,0 +1,50 @@
+@charset "UTF-8";
+@use "../../utils/colors.scss" as *;
+
+h1, h6 {
+    margin: .5rem;
+    text-align: center;
+}
+
+h1 {
+    font-size: xx-large;
+}
+
+.problems-wrapper {
+    display: flex;
+    flex-direction: column;
+
+    & .card {
+        display: flex;
+        flex-direction: column;
+
+        & > div {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        & button {
+            transition: .25s;
+            color: $color-grey-50;
+            font-family: inherit;
+            font-size: larger;
+            border-radius: .5rem;
+            border: none;
+            padding: .5rem 1rem;
+            outline: none;
+            cursor: pointer;
+            margin-top: 1rem;
+            background-color: $color-green-800;
+
+            &:hover {
+                background-color: $color-green-900;
+            }
+
+            &:active {
+                scale: 0.95;
+            }
+        }
+    }
+}
