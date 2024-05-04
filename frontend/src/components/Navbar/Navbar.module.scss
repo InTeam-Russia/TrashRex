@@ -88,8 +88,12 @@
             }
         }
 
-        & a.brand span {
-            font-size: medium;
+        & a.brand {
+            margin-right: -1.5rem;
+
+            & span {
+                font-size: medium;
+            }
         }
     }
 }
