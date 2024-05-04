@@ -7,7 +7,9 @@ from starlette import status
 from starlette.responses import JSONResponse
 
 from auth.database import User, Async_Session
-from models.models import problems, events, event_members, users
+from extra.achivements import added_events_achivement_check, visited_events_achivement_check
+#from extra.levels import move_level
+from models.models import problems, events, event_members, users, user_achivements
 from routes.auth import current_user
 
 events_router = APIRouter()
@@ -28,7 +30,7 @@ async def get_all_events(user: User = Depends(current_user)):
                     tags=["events"],
                     summary="Create a new event"
                     )
-async def create_event(name: str, description: str, lat: float, lon: float, User = Depends(current_user)):
+async def create_event(name: str, description: str, lat: float, lon: float, user: User = Depends(current_user)):
     async with Async_Session() as session:
         try:
             same_name = await session.execute(
@@ -41,19 +43,27 @@ async def create_event(name: str, description: str, lat: float, lon: float, User
                 insert(events).values(
                     name = name,
                     description = description,
-                    leader_id = User.id,
+                    leader_id = user.id,
                     lat = lat,
                     lon = lon,
                     status = "preparation"
                 )
             )
+            await session.execute(
+                update(users).where(users.c.id == user.id).values(events_added=users.c.events_added + 1)
+            )
+            achivement_id_check = await added_events_achivement_check(user.id)
+            if achivement_id_check:
+                await session.execute(
+                    insert(user_achivements).values(user_id=user.id, achivement_id=achivement_id_check)
+                )
 
             await session.commit()
             return JSONResponse(
                 content={
                     "name": name,
                     "description": description,
-                    "leader_id": User.id,
+                    "leader_id": user.id,
                     "lat": lat,
                     "lon": lon,
                     "status": "preparation",
@@ -93,7 +103,16 @@ async def join_event(event_id: int, user: User = Depends(current_user)):
                      "user_id": user.id}
                 )
             )
+
+            await session.execute(
+                update(users).where(users.c.id == user.id).values(events_visited=users.c.events_visited + 1)
+            )
+            achivement_id_check = await visited_events_achivement_check(user.id)
+            if achivement_id_check:
+                await session.execute(
+                    insert(user_achivements).values(user_id=user.id, achivement_id=achivement_id_check))
             await session.commit()
+
             return {"status": "Enrolled to event"}
         else:
             raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE,
@@ -148,6 +167,7 @@ async def finish_event(event_id: int, user: User = Depends(current_user)):
                 {"status": "completed"}
             )
         )
+
         await session.commit()
         return {"status": "Event finished!"}
 
@@ -195,5 +215,11 @@ async def review_on(event_id: int, user_id: int, review: bool, user: User = Depe
                 {"is_member_good": review}
             )
         )
+        if review:
+            await session.execute(
+                update(users).where(users.c.id == event_members.c.user_id).values(exp=users.c.exp + 20).where(
+                    event_members.c.event_id == event_id)
+            )
+            #await move_level(user.id)
         await session.commit()
         return {"status": "Review completed!"}

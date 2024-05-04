@@ -13,7 +13,7 @@ from auth.database import User, engine
 from auth.manager import get_user_manager
 from auth.schemas import UserRead, UserCreate
 
-from models.models import problems, problem_votes, users
+from models.models import users
 
 
 auth_router = APIRouter()
@@ -43,7 +43,9 @@ auth_router.include_router(
 async def whoami(asked_user: User = Depends(current_user)):
     async with Async_Session() as session:
         user_row = await session.execute(
-            select(users.c.id, users.c.email, users.c.telegram, users.c.vk, users.c.photo, users.c.name, users.c.surname).where(users.c.id == asked_user.id)
+            select(users.c.id, users.c.email, users.c.telegram, users.c.vk, users.c.photo,
+                   users.c.name, users.c.surname, users.c.problems_added, users.c.problems_solved,
+                   users.c.events_added, users.c.events_visited, users.c.exp, users.c.level).where(users.c.id == asked_user.id)
         )
         user_row = user_row.first()
         return JSONResponse(
@@ -56,7 +58,13 @@ async def whoami(asked_user: User = Depends(current_user)):
             "vk": user_row.vk,
             "photo": user_row.photo,
             "name": user_row.name,
-            "surname": user_row.surname
+            "surname": user_row.surname,
+            "problems_added": user_row.problems_added,
+            "problems_solved": user_row.problems_solved,
+            "events_added": user_row.events_added,
+            "events_visited": user_row.events_visited,
+            "exp": user_row.exp,
+            "level": user_row.level
             }
         )
 @auth_router.post("/auth/user/{target_id}",
@@ -65,8 +73,10 @@ async def whoami(asked_user: User = Depends(current_user)):
 async def select_user(target_id: int):
     async with Async_Session() as session:
         user_row = await session.execute(
-            select(users.c.id, users.c.email, users.c.telegram, users.c.vk, users.c.photo, users.c.name,
-                   users.c.surname).where(users.c.id == target_id)
+            select(users.c.id, users.c.email, users.c.telegram, users.c.vk, users.c.photo,
+                   users.c.name, users.c.surname, users.c.problems_added, users.c.problems_solved,
+                   users.c.events_added, users.c.events_visited, users.c.exp, users.c.level).where(
+                users.c.id == target_id)
         )
         try:
             user_row = user_row.first()
@@ -77,14 +87,18 @@ async def select_user(target_id: int):
             status_code=status.HTTP_200_OK,
             content=
             {
-                "id": user_row.id,
-                "email": user_row.email,
-                "telegram": user_row.telegram,
-                "vk": user_row.vk,
-                "photo": user_row.photo,
-                "name": user_row.name,
-                "surname": user_row.surname
+            "id": user_row.id,
+            "email": user_row.email,
+            "telegram": user_row.telegram,
+            "vk": user_row.vk,
+            "photo": user_row.photo,
+            "name": user_row.name,
+            "surname": user_row.surname,
+            "problems_added": user_row.problems_added,
+            "problems_solved": user_row.problems_solved,
+            "events_added": user_row.events_added,
+            "events_visited": user_row.events_visited,
+            "exp": user_row.exp,
+            "level": user_row.level
             }
         )
-
-
