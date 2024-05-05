@@ -7,6 +7,8 @@ import Modal from "../../components/Modal/Modal"
 
 
 const AuthregPage = () => {
+  const vkRegex = /^@[a-zA-Z0-9_]+$/
+  const tgRegex = /^@[a-zA-Z0-9_]+$/
   const [isAuth, setIsAuth] = useState(true)
   const [authForm, setAuthForm] = useState({
     email: "",
@@ -24,6 +26,8 @@ const AuthregPage = () => {
   })
 
   const [regFormValidate, setRegFormValidate] = useState({
+    isVkPattern: true,
+    isTgPattern: true,
     isPasswordsMatch: true,
     isVkOrTg: true,
   })
@@ -119,11 +123,15 @@ const AuthregPage = () => {
   const register = () => {
     let flag = true
     flag = flag && (regForm.password === regForm.rNavbarepeatedPassword)
+    flag = flag && vkRegex.test(regForm.vk)
+    flag = flag && tgRegex.test(regForm.telegram)
     flag = flag && (regForm.vk + regForm.telegram !== "")
 
     setRegFormValidate(({ prev }) => ({
       isPasswordsMatch: (regForm.password === regForm.repeatedPassword),
       isVkOrTg: (regForm.vk + regForm.telegram !== ""),
+      isVkPattern: vkRegex.test(regForm.vk),
+      isTgPattern: tgRegex.test(regForm.telegram),
     }))
 
     if (!flag) {
