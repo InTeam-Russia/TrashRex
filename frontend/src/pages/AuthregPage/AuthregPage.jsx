@@ -94,7 +94,7 @@ const AuthregPage = () => {
       .then(response => {
         console.log(response)
         if(response.ok) {
-          console.log(response.headers.raw()['set-cookie']);
+          window.location = '/';
           return true;
         }
         let state = errorModalState;
