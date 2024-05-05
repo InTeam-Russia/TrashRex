@@ -9,13 +9,22 @@ import { StrictMode } from "react";
 
 const ProblemPoint = ({index, problem, user}) => {
   const [problemState, setProblem] = useState(problem)
+  const [takeButtonState, setTakeButtonState] = useState(true)
+  const [solveButtonState, setSolveButtonState] = useState(false)
+  const [waitingState, setWaitingState] = useState(false)
   
   const onTakeWork = () => {
     if(!user) {
       window.location.pathname = "/authreg"
       return;
     }
+    setTakeButtonState(false)
+    setSolveButtonState(true)
+  }
 
+  const onSolveWork = () => {
+    setSolveButtonState(false)
+    setWaitingState(true)
   }
 
   const balloon = <>
@@ -23,11 +32,15 @@ const ProblemPoint = ({index, problem, user}) => {
           <div className={style['card-wrapper']}>
           <img src={problemState.photo} width="400" height="192" style={{objectFit: "cover"}} />
           <h2>{problemState.description}</h2>
-          <button className={style.button} onClick={() => {onTakeWork()}}>
+          <button className={`${!takeButtonState ? style.hidden : ''} ${style.button}`} onClick={() => {onTakeWork()}} >
           Заняться решением проблемы
           </button>
-          </div>  
-      </div>
+          <button className={`${!solveButtonState ? style.hidden : ''} ${style.button}`} onClick={() => {onSolveWork()}} >
+          Проблема решена
+          </button>
+          <p className={`${!waitingState ? style.hidden : ''}`}>Ожидаем, когда сообщивший о проблеме человек проверит Ваш фотоотчёт...</p>
+          </div>
+    </div>
   </>;
 
   const getBalloonContent = (e) => {
