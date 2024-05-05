@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom"
 import Navbar from "./components/Navbar/Navbar"
 import AuthregPage from "./pages/AuthregPage/AuthregPage"
 import MapPage from "./pages/MapPage/MapPage"
+import AboutPage from "./pages/AboutPage/AboutPage"
 import { useEffect, useState } from "react"
 import { useLocation } from "react-router-dom"
 
@@ -34,9 +35,18 @@ const App = () => {
       <Navbar user={user} setUser={setUser} />
       <div className="app-wrapper">
         <Routes>
-          <Route path="/authreg" element={<AuthregPage />} />
-          <Route path="/map" element={<MapPage />} />
-          <Route path="/" element={<MapPage />} />
+          {user ?
+          <>
+            <Route path="/" element={<MapPage user={user} setUser={setUser} />} />
+            <Route path="/about" element={<AboutPage />} />
+          </>
+          :
+          <>
+            <Route path="/" element={<AboutPage />} />
+            <Route path="/map" element={<MapPage user={user} setUser={setUser} />} />
+            <Route path="/authreg" element={<AuthregPage />} />
+          </>
+          }
         </Routes>
       </div>
     </main>

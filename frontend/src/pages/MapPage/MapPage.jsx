@@ -3,7 +3,7 @@ import { YMaps, Map, GeolocationControl, RulerControl, TrafficControl, TypeSelec
 import style from "./MapPage.module.scss"
 import { problemsList } from "../../utils/problems"
 
-const MapPage = () => {
+const MapPage = (user, setUser) => {
   const [coord, setCoord] = useState([51.529617326918846, 46.043731689453146])
   const [problems, setProblems] = useState(problemsList.map(problem => ({
     description: problem.description,
@@ -72,7 +72,7 @@ const MapPage = () => {
           <TypeSelector options={{ float: "right" }} />
           <ZoomControl options={{ float: "right" }} />
 
-          <Placemark options={{iconColor: "#ff0000", preset: "islands#redPinIcon"}} geometry={coord} />
+          {user ? <Placemark options={{iconColor: "#ff0000", preset: "islands#redPinIcon"}} geometry={coord} /> : <></> }
           <Clusterer>
           {problems.map((problem, index) => (
             <Placemark options={{iconColor: "#0000ff",

@@ -3,8 +3,8 @@ import { Icon } from "@iconify/react"
 import style from "./Navbar.module.scss"
 
 const Navbar = ({ user, setUser }) => {
-  const tabsList = [
-  {
+  const tabsList = user ? [
+    {
       route: "/map",
       name: "Карта",
       icon: "jam:map",
@@ -18,6 +18,18 @@ const Navbar = ({ user, setUser }) => {
       route: "/tasks",
       name: "Мои задачи",
       icon: "bx:task",
+    }
+  ]
+  : [
+    {
+      route: "/map",
+      name: "Карта",
+      icon: "jam:map",
+    },
+    {
+      route: "/",
+      name: "О нас",
+      icon: "mdi:about"
     }
   ]
   
