@@ -10,3 +10,4 @@ DB_USER = os.environ.get("DB_USER")
 DB_PASS = os.environ.get("DB_PASS")
 
 JWT_SECRET_CODE = os.environ.get("JWT_SECRET_CODE")
+TOKEN_SECRET_PHRASE = os.environ.get("TOKEN_SECRET_PHRASE")

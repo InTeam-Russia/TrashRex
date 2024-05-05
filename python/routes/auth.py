@@ -13,8 +13,7 @@ from auth.database import User, engine
 from auth.manager import get_user_manager
 from auth.schemas import UserRead, UserCreate
 
-from models.models import users
-
+from models.models import users, achivements, user_achivements
 
 auth_router = APIRouter()
 Async_Session = async_sessionmaker(engine)
@@ -45,9 +44,23 @@ async def whoami(asked_user: User = Depends(current_user)):
         user_row = await session.execute(
             select(users.c.id, users.c.email, users.c.telegram, users.c.vk, users.c.photo,
                    users.c.name, users.c.surname, users.c.problems_added, users.c.problems_solved,
-                   users.c.events_added, users.c.events_visited, users.c.exp, users.c.level).where(users.c.id == asked_user.id)
+                   users.c.events_added, users.c.events_visited, users.c.exp, users.c.level)
+            .where(users.c.id == asked_user.id)
         )
         user_row = user_row.first()
+        achivement_row = await session.execute(
+            select(achivements).where(achivements.c.id == user_achivements.c.achivement_id)
+            .where(user_achivements.c.user_id == asked_user.id)
+        )
+        achivement_row = achivement_row.fetchall()
+        lst_achivements = []
+        for row in achivement_row:
+            lst_achivements.append({
+                "name": row.name,
+                "description": row.description,
+                "logo": row.logo,
+            })
+
         return JSONResponse(
             status_code=status.HTTP_200_OK,
             content=
@@ -64,7 +77,8 @@ async def whoami(asked_user: User = Depends(current_user)):
             "events_added": user_row.events_added,
             "events_visited": user_row.events_visited,
             "exp": user_row.exp,
-            "level": user_row.level
+            "level": user_row.level,
+            "achivements": lst_achivements
             }
         )
 @auth_router.post("/auth/user/{target_id}",
@@ -83,6 +97,20 @@ async def select_user(target_id: int):
         except:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail="User not found")
+
+        achivement_row = await session.execute(
+            select(achivements).where(achivements.c.id == user_achivements.c.achivement_id)
+            .where(user_achivements.c.user_id == target_id)
+        )
+        achivement_row = achivement_row.fetchall()
+        lst_achivements = []
+        for row in achivement_row:
+            lst_achivements.append({
+                "name": row.name,
+                "description": row.description,
+                "logo": row.logo,
+            })
+
         return JSONResponse(
             status_code=status.HTTP_200_OK,
             content=
@@ -99,6 +127,7 @@ async def select_user(target_id: int):
             "events_added": user_row.events_added,
             "events_visited": user_row.events_visited,
             "exp": user_row.exp,
-            "level": user_row.level
+            "level": user_row.level,
+            "achivements": lst_achivements
             }
         )

@@ -1,13 +1,5 @@
-import json
-
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
-from sqlalchemy import insert, select, delete
-
-from auth.database import User, Async_Session
-
-from models.models import problems, problem_votes, users
 
 from routes.auth import auth_router
 from routes.events import events_router

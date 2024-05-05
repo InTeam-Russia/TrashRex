@@ -23,6 +23,12 @@ class User(SQLAlchemyBaseUserTable[int], Base):
     vk: Mapped[str] = mapped_column(String(length=256), nullable=True)
     name: Mapped[str] = mapped_column(String(length=256), nullable=False)
     surname: Mapped[str] = mapped_column(String(length=256), nullable=True)
+    problems_added: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    problems_solved: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    events_added: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    events_visited: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    exp: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    level: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
 
 
 

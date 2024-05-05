@@ -7,10 +7,8 @@ import Modal from "../../components/Modal/Modal"
 
 
 const AuthregPage = () => {
-  const emailRegex = /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z0-9]+$/
   const vkRegex = /^@[a-zA-Z0-9_]+$/
   const tgRegex = /^@[a-zA-Z0-9_]+$/
-
   const [isAuth, setIsAuth] = useState(true)
   const [authForm, setAuthForm] = useState({
     email: "",
@@ -132,10 +130,10 @@ const AuthregPage = () => {
     flag = flag && (regForm.vk + regForm.telegram !== "")
 
     setRegFormValidate(({ prev }) => ({
-      isVkPattern: vkRegex.test(regForm.vk),
-      isTgPattern: tgRegex.test(regForm.telegram),
       isPasswordsMatch: (regForm.password === regForm.repeatedPassword),
       isVkOrTg: (regForm.vk + regForm.telegram !== ""),
+      isVkPattern: vkRegex.test(regForm.vk),
+      isTgPattern: tgRegex.test(regForm.telegram),
     }))
 
     if (!flag) {

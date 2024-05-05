@@ -1,0 +1,12 @@
+INSERT INTO public.achivements (id, name, description, logo) VALUES (1, 'Эко-френдли', 'Решил 1 мусорную проблему.', '/trash/pics/eco_logo.png');
+INSERT INTO public.achivements (id, name, description, logo) VALUES (2, 'На страже порядка', 'Сообщил об 1 мусорной проблеме.', '/trash/pics/defend_logo.png');
+INSERT INTO public.achivements (id, name, description, logo) VALUES (3, 'Вместе мы сила', 'Организовал 1 субботник.', '/trash/pics/create_event_logo1.png');
+INSERT INTO public.achivements (id, name, description, logo) VALUES (4, 'Мешком к мешку', 'Поучаствовал в 1 субботнике', '/trash/pics/join_event.png');
+INSERT INTO public.achivements (id, name, description, logo) VALUES (5, 'Помощник природы', 'Решил 10 мусорных проблем.', '/trash/pics/eco_logo.png');
+INSERT INTO public.achivements (id, name, description, logo) VALUES (6, 'Зоркий глаз', 'Сообщил о 10 мусорных проблемах.', '/trash/pics/eye.png');
+INSERT INTO public.achivements (id, name, description, logo) VALUES (7, 'Начинающий организатор', 'Организовал 3 субботника.', '/trash/pics/org.png');
+INSERT INTO public.achivements (id, name, description, logo) VALUES (8, 'Общественник', 'Поучаствовал в 5 субботниках.', '/trash/pics/obshe.png');
+INSERT INTO public.achivements (id, name, description, logo) VALUES (9, 'Мусоровоз', 'Решил 20 мусорных проблем.', '/trash/pics/musorovoz.png');
+INSERT INTO public.achivements (id, name, description, logo) VALUES (10, 'Всевидящее око', 'Сообщил о 20 мусорных проблемах.', '/trash/pics/bigeye.png');
+INSERT INTO public.achivements (id, name, description, logo) VALUES (11, 'Прирождённый лидер', 'Организовал 7 субботников.', '/trash/pics/leader.png');
+INSERT INTO public.achivements (id, name, description, logo) VALUES (12, 'Командный игрок', 'Поучаствовал в 10 субботниках.', '/trash/pics/teamplayer.png');
