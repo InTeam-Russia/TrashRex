@@ -29,7 +29,7 @@ const Navbar = ({ user, setUser }) => {
     {
       route: "/",
       name: "О нас",
-      icon: "mdi:about"
+      icon: "fe:warning"
     }
   ]
   
