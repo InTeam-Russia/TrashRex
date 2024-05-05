@@ -5,6 +5,7 @@ import { problemsList } from "../../utils/problems"
 import ReactDOMServer from 'react-dom/server'
 import { createRoot } from 'react-dom/client';
 import { StrictMode } from "react";
+import ModalAlert from '../ModalAlert/ModalAlert'
 
 
 const ProblemPoint = ({index, problem, user}) => {
@@ -12,6 +13,9 @@ const ProblemPoint = ({index, problem, user}) => {
   const [takeButtonState, setTakeButtonState] = useState(true)
   const [solveButtonState, setSolveButtonState] = useState(false)
   const [waitingState, setWaitingState] = useState(false)
+  const [modalShown, setModalVisibility] = useState({
+    visible: false
+  });
   
   const onTakeWork = () => {
     if(!user) {
@@ -23,7 +27,16 @@ const ProblemPoint = ({index, problem, user}) => {
   }
 
   const onSolveWork = () => {
+    setModalVisibility({
+      visible: true
+    })
+  }
+
+  const solveWork = () => {
     setSolveButtonState(false)
+    setModalVisibility({
+      visible: false
+    })
     setWaitingState(true)
   }
 
@@ -63,6 +76,7 @@ const ProblemPoint = ({index, problem, user}) => {
                                 hintContent: `<b>${problemState.lat} ${problemState.lat}</b>`,
                                 balloonContent: `<div id="${index}-balloon" class="${style.ballon}"></div>`,}} onClick={getBalloonContent} />
         {getBalloonContent()}
+        <ModalAlert icon="material-symbols:image" closable="true" header="Загрузите фотоотчёт" body={(<>Загрузите фотоотчёт: <input type="file" /></>)} onClick={() => solveWork()} buttonText="Отправить" {...modalShown} state={modalShown} />
     </>
   )
   /*
