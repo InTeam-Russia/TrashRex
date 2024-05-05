@@ -2,8 +2,9 @@ import React, { useRef, useState, useEffect } from "react"
 import { YMaps, Map, GeolocationControl, RulerControl, TrafficControl, TypeSelector, ZoomControl, Placemark, Clusterer } from "@pbe/react-yandex-maps";
 import style from "./MapPage.module.scss"
 import { problemsList } from "../../utils/problems"
+import ProblemPoint from "../../components/ProblemPoint/ProblemPoint";
 
-const MapPage = (user, setUser) => {
+const MapPage = ({user, setUser}) => {
   const [coord, setCoord] = useState([51.529617326918846, 46.043731689453146])
   const [problems, setProblems] = useState(problemsList.map(problem => ({
     description: problem.description,
@@ -56,9 +57,14 @@ const MapPage = (user, setUser) => {
 
   return (
     <>
-    <button onClick={handleAddProblem} className={style["float-button"]} >
+    {user ?
+    <>
+      <button onClick={handleAddProblem} className={style["float-button"]} >
       +
-    </button>
+      </button>
+    </>
+    :
+    <></>}
     <div className={style.ymaps}>
       <YMaps query={{ lang: "ru_RU", apikey: "ae7af7e4-21ba-424c-8434-23281d1da074" }}>
         <div>
@@ -74,22 +80,9 @@ const MapPage = (user, setUser) => {
 
           {user ? <Placemark options={{iconColor: "#ff0000", preset: "islands#redPinIcon"}} geometry={coord} /> : <></> }
           <Clusterer>
-          {problems.map((problem, index) => (
-            <Placemark options={{iconColor: "#0000ff",
-                                 preset: "pinIcon"}}
-                       onClick={setTimeout(() => { setActivePortal(true)}, 0)} key={index} geometry={[problem.lat, problem.lon]}
-                       properties={{iconContent: `<b>!</b>`,
-                                    hintContent: `<b>${problem.lat} ${problem.lat}</b>`,
-                                    balloonContent: `<div id="driver-2" class="driver-card ${style["driver-card"]}">
-                                      <div class=${style["card-wrapper"]}>
-                                      <img src="${problem.photo}" width="400" height="192" style="object-fit: cover" />
-                                      <h2>${problem.description}</h2>
-                                      <button class=${style.button} onclick="alert("TES");">
-                                        Заняться решением проблемы
-                                      </button>
-                                      </div>
-                                    </div>`,}} />
-          ))}
+          {problems.map((problem, index) => {
+            return <ProblemPoint index={index} problem={problem} user={user} />
+          })}
           </Clusterer>
           </Map>
         </div>

@@ -34,7 +34,9 @@ const AuthregPage = () => {
     isVkOrTg: true,
   })
 
-  const [modalShown, setModalVisibility] = useState(false);
+  const [modalShown, setModalVisibility] = useState({
+    visible: false
+  });
 
   const [errorModalState, setErrorModalState] = useState({
     visible: false,
@@ -126,7 +128,7 @@ const AuthregPage = () => {
     let flag = true
     flag = flag && vkRegex.test(regForm.vk)
     flag = flag && tgRegex.test(regForm.telegram)
-    flag = flag && (regForm.password === regForm.rNavbarepeatedPassword)
+    flag = flag && (regForm.password === regForm.repeatedPassword)
     flag = flag && (regForm.vk + regForm.telegram !== "")
 
     setRegFormValidate(({ prev }) => ({
@@ -152,7 +154,7 @@ const AuthregPage = () => {
       surname: regForm.surname ? regForm.surname : null,
     }
 
-    fetch("http://localhosts:8000/user/register", {
+    fetch("http://localhost:8000/user/register", {
       method: "POST",
       credentials: 'include',
       body: JSON.stringify(res),
@@ -162,7 +164,9 @@ const AuthregPage = () => {
     })
       .then(response => response.json())
       .then(response => {
-        setModalVisibility(true);
+        setModalVisibility({
+          visible: true
+        });
       })
       .catch(() => { alert("Ошибка сервера, попробуйте позднее") })
   }
@@ -211,7 +215,7 @@ const AuthregPage = () => {
           <input type="reset" value="Сбросить" />
         </div>
       </form>
-      <ModalAlert icon="gis:poi-info" visible={modalShown} header="Регистрация прошла успешно" body="Теперь вы можете войти в свой аккаунт" onClick={() => window.location.reload()} buttonText="Войти" />
+      <ModalAlert icon="gis:poi-info" closable="false" header="Регистрация прошла успешно" body="Теперь вы можете войти в свой аккаунт" onClick={() => window.location.reload()} buttonText="Войти" {...modalShown} state={modalShown} />
       <ModalAlert icon="bx:error" {...errorModalState} state={errorModalState} />
     </section>
   )
